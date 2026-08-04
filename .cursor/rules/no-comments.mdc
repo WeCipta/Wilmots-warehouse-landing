@@ -1,0 +1,13 @@
+---
+description: Prefer self-explanatory code over comments
+alwaysApply: true
+---
+
+# No comments by default
+
+Do not add comments to code unless the user explicitly asks for them.
+
+- Prefer clear names, small functions, and structure that explain intent
+- Do not leave narrating, leftover, or “explainer” comments
+- Avoid TODO / FIXME comments unless the user requests them
+- JSDoc is allowed only when a public API truly needs a type-level contract that TypeScript cannot express

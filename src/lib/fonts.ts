@@ -1,23 +1,7 @@
-import localFont from "next/font/local";
+import { Nunito } from "next/font/google";
 
-export const pally = localFont({
-  src: [
-    {
-      path: "../fonts/pally/Pally-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/pally/Pally-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../fonts/pally/Pally-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-  ],
+export const nunito = Nunito({
+  subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
