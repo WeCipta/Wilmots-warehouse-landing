@@ -1,0 +1,26 @@
+---
+description: Never mark page components as client components
+globs: src/app/**/page.tsx
+alwaysApply: true
+---
+
+# No `'use client'` on pages
+
+Page components under `src/app/**/page.tsx` must remain Server Components.
+
+- Never add `'use client'` to a page file
+- Keep data fetching, metadata, and composition on the page
+- Put interactivity, browser APIs, GSAP, Lenis hooks, and other client-only logic in isolated components under `src/components/`
+- Import those client components into the page instead of converting the page itself
+
+```tsx
+// ❌ BAD — page.tsx
+"use client";
+export default function Home() { ... }
+
+// ✅ GOOD — page.tsx stays a server component
+import { Hero } from "@/components/hero";
+export default function Home() {
+  return <Hero />;
+}
+```
