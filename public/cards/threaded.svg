@@ -1,0 +1,18 @@
+<svg width="170" height="170" viewBox="0 0 170 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2025_39)">
+<path d="M170 0H0V170H170V0Z" fill="#FFF6E5"/>
+<path d="M-17 25.5C17 136 76.5 119 88.4 59.5C98.6 8.5 144.5 17 187 8.5" stroke="#38A3D8" stroke-width="14" stroke-linecap="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M68.0001 102C53.5 69.5 47.6001 59.5 47.6001 34C47.6001 -3.39999 122.4 -3.39999 122.4 34C122.4 59.5 116 69.5 102 102V178.5H68.0001V102ZM85.0001 20.4C98.6001 20.4 100.3 42.5 100.3 59.5C100.3 76.5 93 83 85.0001 93.5C75.5 81.5 69.7001 76.5 69.7001 59.5C69.7001 42.5 71.4001 20.4 85.0001 20.4Z" fill="#1C384E"/>
+<mask id="mask0_2025_39" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="85" height="170">
+<path d="M85 0H0V170H85V0Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_2025_39)">
+<path d="M-17 25.5C17 136 76.5 119 88.4 59.5C98.6 8.5 144.5 17 187 8.5" stroke="#38A3D8" stroke-width="14" stroke-linecap="round"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_2025_39">
+<rect width="170" height="170" fill="white"/>
+</clipPath>
+</defs>
+</svg>
