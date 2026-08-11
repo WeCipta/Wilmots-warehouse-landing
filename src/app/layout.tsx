@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import Navbar from "@/app/(landing)/_components/navbar";
 import { nunito } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import "lenis/dist/lenis.css";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col">
+        <Navbar />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
