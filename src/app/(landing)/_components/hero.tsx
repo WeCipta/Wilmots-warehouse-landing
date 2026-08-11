@@ -1,10 +1,45 @@
 "use client";
 
-// import Image from "next/image";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Button } from "@/components/ui/button";
+import { GameCard } from "@/components/game-card";
+
+// ─── Card placement data ───────────────────────────────────────────────────────
+// Each entry maps to one grid cell. col/row are 1-based CSS grid indices.
+const HERO_CARDS: {
+  col: number;
+  row: number;
+  src?: string;
+  variant?: "face-up" | "face-down";
+}[] = [
+  // ── Left column ──
+  { col: 3, row: 2, src: "banana.svg" },
+  { col: 4, row: 3, src: "bomb.svg" },
+  { col: 3, row: 4, src: "frog.svg" },
+  { col: 4, row: 5, variant: "face-down" },
+  { col: 3, row: 6, src: "gem.svg" },
+
+  // ── Right column ──
+  { col: 12, row: 2, src: "sun.svg" },
+  { col: 11, row: 3, variant: "face-down" },
+  { col: 12, row: 4, src: "mask.svg" },
+  { col: 11, row: 5, src: "rainbow.svg" },
+  { col: 12, row: 6, variant: "face-down" },
+
+  // ── Above title ──
+  { col: 5, row: 2, variant: "face-down" },
+  { col: 7, row: 2, src: "volcano.svg" },
+  { col: 9, row: 2, variant: "face-down" },
+
+  // ── Below button ──
+  { col: 6, row: 7, src: "icecream.svg" },
+  { col: 8, row: 7, src: "horse.svg" },
+  { col: 5, row: 8, variant: "face-down" },
+  { col: 7, row: 8, src: "target.svg" },
+  { col: 9, row: 8, variant: "face-down" },
+];
 
 const COLS = 14;
 const ROWS = 20;
@@ -76,7 +111,34 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Content grid — mirrors the background grid for pixel-perfect cell alignment */}
+      {/* Card ornament layer — z-10 sits between grid bg (z-0) and content (z-20) */}
+      <div
+        data-hero-cards
+        aria-hidden="true"
+        className="absolute top-0 left-1/2 -translate-x-1/2 grid"
+        style={{
+          gridTemplateColumns: `repeat(${COLS}, max(${MIN_CELL}px, calc(100vw / ${COLS})))`,
+          gridTemplateRows: `repeat(${ROWS}, max(${MIN_CELL}px, calc(100vw / ${COLS})))`,
+          zIndex: 10,
+        }}
+      >
+        {HERO_CARDS.map(({ col, row, src, variant }, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-center p-2"
+            style={{ gridColumn: col, gridRow: row }}
+          >
+            <GameCard
+              src={src}
+              variant={variant}
+              className="w-full h-full"
+              size={MIN_CELL}
+            />
+          </div>
+        ))}
+      </div>
+
+
       <div
         data-hero-content
         className="absolute top-0 left-1/2 z-20 -translate-x-1/2 grid"
@@ -86,27 +148,22 @@ export function Hero() {
         }}
       >
         {/* Title — cols 2-8, rows 3-6 (2 rows tall) */}
-        <div className="flex flex-col justify-center items-center px-4   bg-background border-white/20 border" style={{ gridColumn: "2 / 8", gridRow: "3 / 5" }}>
-          <p
-          className="sm:text-5xl md:text-6xl text-4xl font-extrabold tracking-tight"
-          >
-          Wilmot&apos;s Warehouse
+        <div className="flex flex-col justify-center items-center text-center px-4 bg-background border-white/20 border" style={{ gridColumn: "5 / 11", gridRow: "3 / 5" }}>
+          <h1 className="sm:text-5xl md:text-6xl text-4xl font-black tracking-tight">
+            Wilmot&apos;s Warehouse
+          </h1>
+          <p className="text-base font-semibold tracking-tight text-white/80 sm:text-lg">
+            Organize the warehouse with memory and imagination.
           </p>
-          <h1
-          className="text-base font-semibold tracking-tight text-white/80 sm:text-lg"
-          
-        >
-          Organize the warehouse with memory and imagination.
-        </h1>
         </div>
 
-        {/* Tagline — cols 2-8, row 6 */}
-        <Button
-          className="flex items-center h-full rounded-none px-4 text-2xl font-semibold tracking-tight text-black hover:bg-white  cursor-pointer"
-          style={{ gridColumn: "2 / 4", gridRow: "6 / 7" }}
-        >
-          Order Now
-        </Button>
+        <div style={{ gridColumn: "7 / 9", gridRow: "6 / 7" }}>
+          <Button
+            className="flex items-center w-full h-full rounded-none px-4 text-2xl font-semibold tracking-tight bg-white text-black cursor-pointer"
+          >
+            Order Now
+          </Button>
+        </div>
       </div>
     </section>
   );
