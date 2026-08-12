@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import {
+  FollowMouseProvider,
+  FollowMouseCursor,
+} from "@/components/follow-mouse";
 import Navbar from "@/app/(landing)/_components/navbar";
 import { nunito } from "@/lib/fonts";
+import { siteContent } from "@/lib/site-content";
 import { cn } from "@/lib/utils";
 import "lenis/dist/lenis.css";
 import "./globals.css";
@@ -13,9 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wilmot's Warehouse",
-  description:
-    "Created by Ricky Haggett, Richard Hogg, and David King (II). In Wilmot's Warehouse, your team will work co-operatively to organize the warehouse, using memory, imagination, and silly stories you make up.",
+  title: siteContent.meta.title,
+  description: siteContent.meta.description,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -29,8 +33,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        <SmoothScroll>{children}</SmoothScroll>
+        <FollowMouseProvider>
+          <Navbar />
+          <SmoothScroll>{children}</SmoothScroll>
+          <FollowMouseCursor />
+        </FollowMouseProvider>
       </body>
     </html>
   );

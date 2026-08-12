@@ -46,6 +46,13 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-btn-red: var(--btn-red);
+  --color-btn-orange: var(--btn-orange);
+  --color-btn-yellow: var(--btn-yellow);
+  --color-btn-green: var(--btn-green);
+  --color-btn-blue: var(--btn-blue);
+  --color-btn-pink: var(--btn-pink);
+  --color-btn-salmon: var(--btn-salmon);
 }
 
 :root {
@@ -81,6 +88,14 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --btn-red: #fd4401;
+  --btn-orange: #ff8800;
+  --btn-yellow: #fdcb40;
+  --btn-green: #00b351;
+  --btn-blue: #2668fd;
+  --btn-pink: #f780d4;
+  --btn-salmon: #ffcccd;
+  --btn-accent: var(--btn-red);
 }
 
 .dark {
@@ -136,5 +151,10 @@
   h4,
   h5 {
     @apply uppercase;
+  }
+
+  ::selection {
+    background-color: var(--foreground);
+    color: var(--background);
   }
 }

@@ -1,132 +1,254 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useCallback } from "react";
+import { useRef, useEffect, useLayoutEffect, useState } from "react";
 import gsap from "gsap";
 import { cn } from "@/lib/utils";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+import { useFollowMouse } from "@/components/follow-mouse";
+import { GRID_CELL } from "@/lib/grid";
 
 export type CardVariant = "face-up" | "face-down";
 
 export interface GameCardProps {
-  /** Filename inside /public/cards (e.g. "apple.svg") */
   src?: string;
-  /** Alt text for the card image */
   alt?: string;
-  /**
-   * Whether the card shows its illustrated face or the patterned back.
-   * Defaults to "face-up".
-   */
   variant?: CardVariant;
-  /**
-   * Size of the card in pixels. The card is always square.
-   * Defaults to 96.
-   */
-  size?: number;
-  /** Extra Tailwind / className overrides on the outermost wrapper. */
+  size?: number | string;
   className?: string;
-  /** Makes the card interactive (hover lift + cursor pointer). */
   interactive?: boolean;
+  lens?: boolean;
+  flipped?: boolean;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Random float in [min, max] */
 function rand(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-/**
- * GameCard
- *
- * A reusable tile that mirrors the chunky, illustrated card aesthetic from
- * Wilmot's Warehouse. It can render any SVG from /public/cards and supports
- * both "face-up" (illustrated) and "face-down" (patterned back) states.
- *
- * Click animation: the card jiggles to a random rotation with an elastic
- * bounce, then settles back to 0°. GSAP consumers can also target the
- * [data-game-card] attribute for external animations (skew, float, etc.).
- */
-export function GameCard({
+function LensFace({
   src,
-  alt = "card",
-  variant = "face-up",
-  size = 96,
-  className,
-  interactive = false,
-  onClick,
-}: GameCardProps) {
-  const cardRef = useRef<HTMLSpanElement>(null);
+  alt,
+  imageSize,
+}: {
+  src: string;
+  alt: string;
+  imageSize: number;
+}) {
+  const { x, y, radius } = useFollowMouse();
+  const faceRef = useRef<HTMLSpanElement>(null);
+  const [clipPath, setClipPath] = useState("circle(0px at 50% 50%)");
 
-  const imageSrc =
-    variant === "face-down" || !src ? "/cards/back.svg" : `/cards/${src}`;
+  useLayoutEffect(() => {
+    const el = faceRef.current;
+    if (!el || x < -1000) {
+      setClipPath("circle(0px at 50% 50%)");
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    setClipPath(`circle(${radius}px at ${x - rect.left}px ${y - rect.top}px)`);
+  }, [x, y, radius]);
 
-  /** Fires on every click — picks a random rotation and bounces back. */
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (cardRef.current) {
-        const current = gsap.getProperty(cardRef.current, "rotation") as number;
-        const sign = Math.random() < 0.5 ? -1 : 1;
-        const delta = sign * rand(10, 25);
-        // Clamp accumulated rotation to [-90, 90]
-        const target = Math.min(45, Math.max(-45, current + delta));
-
-        gsap.killTweensOf(cardRef.current);
-        gsap.to(cardRef.current, {
-          rotation: target,
-          duration: 0.35,
-          ease: "back.out(1.7)",
-        });
-      }
-      onClick?.(e);
-    },
-    [onClick]
-  );
-
-  const card = (
+  return (
     <span
-      ref={cardRef}
-      data-game-card
-      className={cn(
-        // Base shape
-        "relative inline-block select-none overflow-hidden",
-        // Chunky inset border that mimics the physical card feel
-        "ring-[3px] ring-inset ring-white/30",
-        "shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.15)]",
-        // Rounded corners
-        "rounded-[10px]",
-        // Pre-allocate GPU layer for GSAP transforms
-        "will-change-transform",
-        // Interactive hover/active states
-        interactive &&
-          "cursor-pointer transition-[box-shadow] duration-150 ease-out hover:shadow-[4px_6px_0px_0px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.2)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.85)]",
-        className
-      )}
-      style={{ width: size, height: size }}
+      ref={faceRef}
+      className="absolute inset-0 block"
+      style={{ clipPath }}
     >
       <Image
-        src={imageSrc}
+        src={`/cards/${src}`}
         alt={alt}
-        width={size}
-        height={size}
+        width={imageSize}
+        height={imageSize}
         className="block h-full w-full object-cover"
         draggable={false}
         priority={false}
       />
     </span>
   );
+}
 
-  // Always wrap in a button when interactive so the click handler works
-  // whether or not a custom onClick is passed (for the rotation to fire).
+const cardShellClass =
+  "relative select-none overflow-hidden shrink-0 ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.15)] rounded-[10px] will-change-transform";
+
+export function GameCard({
+  src,
+  alt = "card",
+  variant = "face-up",
+  size = GRID_CELL,
+  className,
+  interactive = false,
+  lens = false,
+  flipped,
+  onClick,
+}: GameCardProps) {
+  const cardRef = useRef<HTMLSpanElement>(null);
+  const flipInnerRef = useRef<HTMLSpanElement>(null);
+  const imageSize = typeof size === "number" ? size : GRID_CELL;
+  const fillsParent = typeof size === "string";
+  const useFlip = !lens && !!src && typeof flipped === "boolean";
+
+  const showLensFace = lens && !!src;
+  const imageSrc =
+    lens || variant === "face-down" || !src
+      ? "/cards/back.svg"
+      : `/cards/${src}`;
+
+  useEffect(() => {
+    if (!lens) return;
+    const el = cardRef.current;
+    if (!el) return;
+
+    let delayTween: gsap.core.Tween | null = null;
+    let shakeTl: gsap.core.Timeline | null = null;
+    let cancelled = false;
+
+    const schedule = () => {
+      if (cancelled) return;
+      delayTween = gsap.delayedCall(rand(6, 14), () => {
+        if (cancelled || !cardRef.current) return;
+        const sign = Math.random() < 0.5 ? -1 : 1;
+        shakeTl = gsap
+          .timeline({
+            onComplete: schedule,
+          })
+          .to(cardRef.current, {
+            x: sign * rand(2, 3),
+            rotation: sign * rand(1, 2),
+            duration: 0.09,
+            ease: "power1.inOut",
+          })
+          .to(cardRef.current, {
+            x: -sign * rand(1, 2),
+            rotation: -sign * rand(0.5, 1.5),
+            duration: 0.09,
+            ease: "power1.inOut",
+          })
+          .to(cardRef.current, {
+            x: 0,
+            rotation: 0,
+            duration: 0.14,
+            ease: "power2.out",
+          });
+      });
+    };
+
+    schedule();
+
+    return () => {
+      cancelled = true;
+      delayTween?.kill();
+      shakeTl?.kill();
+      gsap.killTweensOf(el);
+      gsap.set(el, { x: 0, rotation: 0 });
+    };
+  }, [lens]);
+
+  const flipMountedRef = useRef(false);
+
+  useEffect(() => {
+    if (!useFlip) {
+      flipMountedRef.current = false;
+      return;
+    }
+    const el = flipInnerRef.current;
+    if (!el) return;
+
+    const target = flipped ? 180 : 0;
+    if (!flipMountedRef.current) {
+      flipMountedRef.current = true;
+      gsap.set(el, { rotateY: target });
+      return;
+    }
+
+    gsap.to(el, {
+      rotateY: target,
+      duration: 0.35,
+      ease: "power2.inOut",
+    });
+  }, [flipped, useFlip]);
+
+  const interactiveClass =
+    interactive &&
+    (lens
+      ? "cursor-none transition-shadow duration-150 ease-out hover:shadow-[4px_6px_0px_0px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.2)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.85)]"
+      : "cursor-pointer transition-shadow duration-150 ease-out hover:shadow-[4px_6px_0px_0px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.2)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.85)]");
+
+  const card = useFlip ? (
+    <span
+      ref={cardRef}
+      data-game-card
+      className={cn(
+        cardShellClass,
+        "overflow-visible [perspective:800px]",
+        fillsParent ? "block h-full w-full" : "inline-block",
+        interactiveClass,
+        className
+      )}
+      style={{ width: size, height: size, aspectRatio: "1 / 1" }}
+    >
+      <span
+        ref={flipInnerRef}
+        className="relative block h-full w-full [transform-style:preserve-3d]"
+      >
+        <span className="absolute inset-0 overflow-hidden rounded-[10px] [backface-visibility:hidden]">
+          <Image
+            src="/cards/back.svg"
+            alt=""
+            width={imageSize}
+            height={imageSize}
+            className="block h-full w-full object-cover"
+            draggable={false}
+            priority={false}
+          />
+        </span>
+        <span className="absolute inset-0 overflow-hidden rounded-[10px] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+          <Image
+            src={`/cards/${src}`}
+            alt={alt}
+            width={imageSize}
+            height={imageSize}
+            className="block h-full w-full object-cover"
+            draggable={false}
+            priority={false}
+          />
+        </span>
+      </span>
+    </span>
+  ) : (
+    <span
+      ref={cardRef}
+      data-game-card
+      {...(lens ? { "data-follow-lens": true } : {})}
+      className={cn(
+        cardShellClass,
+        fillsParent ? "block h-full w-full" : "inline-block",
+        interactiveClass,
+        className
+      )}
+      style={{ width: size, height: size, aspectRatio: "1 / 1" }}
+    >
+      <Image
+        src={imageSrc}
+        alt={showLensFace ? "" : alt}
+        width={imageSize}
+        height={imageSize}
+        className="block h-full w-full object-cover"
+        draggable={false}
+        priority={false}
+      />
+      {showLensFace && <LensFace src={src} alt={alt} imageSize={imageSize} />}
+    </span>
+  );
+
   if (interactive) {
     return (
       <div
-        onClick={handleClick}
-        className="appearance-none bg-transparent p-0 border-0 focus-visible:outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[10px]"
+        onClick={onClick}
+        className={cn(
+          "appearance-none bg-transparent p-0 border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[10px]",
+          fillsParent && "h-full w-full",
+          lens ? "cursor-none" : "cursor-pointer"
+        )}
       >
         {card}
       </div>
