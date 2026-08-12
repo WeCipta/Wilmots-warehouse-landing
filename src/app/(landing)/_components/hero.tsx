@@ -7,11 +7,7 @@ import { GridOverlay } from "@/components/grid-overlay";
 import { useFinePointer } from "@/hooks/use-fine-pointer";
 import { useGridMetrics } from "@/hooks/use-grid-metrics";
 import { getHeroLayout } from "@/lib/hero-grid-layout";
-import {
-  contentSpanStyle,
-  getHeroContentSpan,
-  siteContent,
-} from "@/lib/site-content";
+import { siteContent } from "@/lib/site-content";
 import { cn } from "@/lib/utils";
 import { HeroTitle } from "./hero-title";
 
@@ -21,13 +17,12 @@ export function Hero() {
     () => getHeroLayout(grid.breakpoint, grid.cols, grid.rows),
     [grid.breakpoint, grid.cols, grid.rows]
   );
-  const contentStyle = contentSpanStyle(getHeroContentSpan(grid.breakpoint));
   const hasFinePointer = useFinePointer();
 
   return (
     <section
       className={cn(
-        "relative isolate min-h-dvh h-[200dvh] overflow-hidden bg-background",
+        "relative isolate min-h-dvh overflow-hidden bg-background",
         hasFinePointer && "cursor-none"
       )}
     >
@@ -52,18 +47,17 @@ export function Hero() {
 
       <div
         data-hero-content
-        className="pointer-events-none absolute inset-x-0 top-0 z-20 w-full grid"
-        style={grid.gridStyle}
+        className="pointer-events-none absolute inset-x-0 top-0 z-20 flex h-dvh flex-col justify-end"
       >
-        <div
-          className="pointer-events-auto flex flex-col justify-center items-center text-center px-4 bg-background border-white/20 border"
-          style={contentStyle}
-        >
-          <HeroTitle />
-          <p className="text-base font-semibold tracking-tight text-white/80 sm:text-lg">
+        <div className="pointer-events-auto grid w-full grid-cols-1 gap-4 border-t border-white/20 bg-background/90 px-4 py-5 backdrop-blur-sm sm:grid-cols-[minmax(0,1fr)_minmax(12rem,20rem)] sm:items-start sm:gap-x-8 sm:gap-y-5 sm:px-6 sm:py-6 md:px-8 md:py-7">
+          <HeroTitle className="min-w-0 text-left sm:max-w-[min(100%,42rem)] md:max-w-[min(100%,52rem)]" />
+          <p
+            data-follow-text
+            className="text-base font-semibold tracking-tight text-white/80 sm:row-span-2 sm:max-w-sm sm:justify-self-end sm:text-right sm:text-lg"
+          >
             {siteContent.hero.tagline}
           </p>
-          <Button variant="filled" size="lg" className="mt-8">
+          <Button variant="filled" size="lg" className="justify-self-start">
             {siteContent.hero.cta}
           </Button>
         </div>

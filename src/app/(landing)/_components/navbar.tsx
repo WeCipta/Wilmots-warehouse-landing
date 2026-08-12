@@ -87,7 +87,7 @@ export default function Navbar() {
         >
           <NavTooltip label={menuOpen ? "Close" : "Menu"} side="left" />
           <GameCard
-            src={menuOpen ? "/nav/navbar-opened.svg" : "/nav/navbar.svg"}
+            src={menuOpen ? "/cards/nav/navbar-opened.svg" : "/cards/nav/navbar.svg"}
             alt=""
             size={cellPx * 0.75}
             interactive
@@ -103,7 +103,7 @@ export default function Navbar() {
         >
           <NavTooltip label={musicOn ? "Mute music" : "Play music"} side="top" />
           <GameCard
-            src={musicOn ? "/nav/music-on.svg" : "/nav/music-off.svg"}
+            src={musicOn ? "/cards/nav/music-on.svg" : "/cards/nav/music-off.svg"}
             alt=""
             size={cellPx * 0.75}
             interactive

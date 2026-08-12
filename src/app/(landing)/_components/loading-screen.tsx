@@ -4,51 +4,25 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 import { GameCard } from "@/components/game-card";
+import { CARD_FACES, resolveCardFaceSrc } from "@/lib/card-faces";
 
 gsap.registerPlugin(Flip);
 
-const FLICK_CARDS = [
-  "banana.svg",
-  "bomb.svg",
-  "frog.svg",
-  "gem.svg",
-  "sun.svg",
-  "mask.svg",
-  "rainbow.svg",
-  "volcano.svg",
-  "icecream.svg",
-  "horse.svg",
-  "target.svg",
-  "apple.svg",
-  "watermelon.svg",
-  "lightbulb.svg",
-  "diamond.svg",
-  "eye.svg",
-  "cube.svg",
-  "confetti.svg",
-  "lava.svg",
-  "satellite.svg",
-  "spade.svg",
-  "tree.svg",
-  "wave.svg",
-  "wrench.svg",
-];
-
-const LOGO = "logo.svg";
+const LOGO = "/cards/logo.svg";
 const FLICK_MS = 0.1;
 const LOGO_HOLD = 0.85;
 const FADE_DURATION = 0.65;
 const CARD_SIZE = 128;
 
-function preloadImages(filenames: string[]) {
+function preloadImages(srcs: string[]) {
   return Promise.all(
-    filenames.map(
-      (file) =>
+    srcs.map(
+      (src) =>
         new Promise<void>((resolve) => {
           const img = new window.Image();
           img.onload = () => resolve();
           img.onerror = () => resolve();
-          img.src = `/cards/${file}`;
+          img.src = src.startsWith("/") ? src : resolveCardFaceSrc(src);
         })
     )
   );
@@ -67,7 +41,7 @@ export function LoadingScreen() {
   const bgRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
-  const [cardSrc, setCardSrc] = useState(FLICK_CARDS[0]);
+  const [cardSrc, setCardSrc] = useState<string>(CARD_FACES[0]);
   const [fading, setFading] = useState(false);
 
   useEffect(() => {
@@ -78,7 +52,7 @@ export function LoadingScreen() {
     let tl: gsap.core.Timeline | null = null;
 
     (async () => {
-      const sequence = [...shuffle(FLICK_CARDS).slice(0, 20), LOGO];
+      const sequence = [...shuffle([...CARD_FACES]).slice(0, 20), LOGO];
       await preloadImages(sequence);
       if (cancelled) return;
 

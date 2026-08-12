@@ -18,7 +18,26 @@ const IDLE_RADIUS = 4;
 const BUTTON_RADIUS = 15;
 const LENS_RADIUS = 56;
 const CARET_WIDTH = 2;
-const CARET_HEIGHT = 48;
+const CARET_HEIGHT_FALLBACK = 48;
+
+function measureCaretHeight(el: Element): number {
+  const rectHeight = el.getBoundingClientRect().height;
+  const style = getComputedStyle(el);
+  const lineHeight = parseFloat(style.lineHeight);
+
+  if (!Number.isNaN(lineHeight) && lineHeight > 0) {
+    if (rectHeight > lineHeight * 1.5) return lineHeight;
+    if (rectHeight > 0) return rectHeight;
+    return lineHeight;
+  }
+
+  if (rectHeight > 0) return rectHeight;
+
+  const fontSize = parseFloat(style.fontSize);
+  if (!Number.isNaN(fontSize) && fontSize > 0) return fontSize * 1.2;
+
+  return CARET_HEIGHT_FALLBACK;
+}
 
 export type FollowFrame = {
   x: number;
@@ -84,6 +103,7 @@ export function FollowMouseProvider({ children }: { children: ReactNode }) {
     height: IDLE_RADIUS * 2,
     radius: 9999,
   });
+  const [caretHeight, setCaretHeight] = useState(CARET_HEIGHT_FALLBACK);
   const sizeProxy = useRef({
     width: IDLE_RADIUS * 2,
     height: IDLE_RADIUS * 2,
@@ -92,6 +112,7 @@ export function FollowMouseProvider({ children }: { children: ReactNode }) {
   const hoveringRef = useRef(false);
   const textHoveringRef = useRef(false);
   const buttonHoveringRef = useRef(false);
+  const caretHeightRef = useRef(CARET_HEIGHT_FALLBACK);
   const frameRef = useRef<FollowFrame | null>(null);
   const pressed = frame !== null;
 
@@ -120,7 +141,7 @@ export function FollowMouseProvider({ children }: { children: ReactNode }) {
 
     const target =
       mode === "text"
-        ? { width: CARET_WIDTH, height: CARET_HEIGHT, radius: 9999 }
+        ? { width: CARET_WIDTH, height: caretHeight, radius: 9999 }
         : mode === "button"
           ? {
               width: BUTTON_RADIUS * 2,
@@ -155,7 +176,7 @@ export function FollowMouseProvider({ children }: { children: ReactNode }) {
     return () => {
       tween.kill();
     };
-  }, [mode, pressed]);
+  }, [mode, pressed, caretHeight]);
 
   useEffect(() => {
     if (!hasFinePointer) {
@@ -177,13 +198,22 @@ export function FollowMouseProvider({ children }: { children: ReactNode }) {
       if (frameRef.current !== null) return;
 
       const el = document.elementFromPoint(e.clientX, e.clientY);
-      const overText = !!el?.closest("[data-follow-text]");
+      const textEl = el?.closest("[data-follow-text]") ?? null;
+      const overText = !!textEl;
       const overButton =
         !overText && !!el?.closest('button, [data-slot="button"]');
       const overLens =
         !overText &&
         !overButton &&
         !!el?.closest("[data-game-card][data-follow-lens]");
+
+      if (textEl) {
+        const nextHeight = measureCaretHeight(textEl);
+        if (Math.abs(nextHeight - caretHeightRef.current) > 0.5) {
+          caretHeightRef.current = nextHeight;
+          setCaretHeight(nextHeight);
+        }
+      }
 
       if (overText !== textHoveringRef.current) {
         textHoveringRef.current = overText;

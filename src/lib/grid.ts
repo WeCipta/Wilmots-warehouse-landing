@@ -29,8 +29,8 @@ export function getGridConfig(breakpoint: GridBreakpoint): GridConfig {
   return GRID_BREAKPOINTS[breakpoint];
 }
 
-export function cellSizeCss(cols = GRID_COLS): string {
-  return `calc(100vw / ${cols})`;
+export function cellSizeCss(_cols = GRID_COLS): string {
+  return "var(--grid-cell)";
 }
 
 export const cellSize = cellSizeCss;
@@ -49,11 +49,11 @@ export function gridStyle(
 }
 
 export function resolveCellPx(
-  viewportWidth: number,
+  layoutWidth: number,
   _viewportHeight: number,
   cols = GRID_COLS,
   _minCell = GRID_CELL,
   _visibleRows = GRID_VISIBLE_ROWS
 ): number {
-  return viewportWidth / cols;
+  return layoutWidth / cols;
 }

@@ -31,7 +31,8 @@ export function useGridMetrics(options: UseGridMetricsOptions = {}) {
 
   useEffect(() => {
     const update = () => {
-      const nextBreakpoint = getBreakpoint(window.innerWidth);
+      const layoutWidth = document.documentElement.clientWidth;
+      const nextBreakpoint = getBreakpoint(layoutWidth);
       setBreakpoint(nextBreakpoint);
 
       const next = getGridConfig(nextBreakpoint);
@@ -39,14 +40,17 @@ export function useGridMetrics(options: UseGridMetricsOptions = {}) {
       const nextMinCell = options.minCell ?? next.minCell;
       const nextVisibleRows = options.visibleRows ?? next.visibleRows;
 
-      setCellPx(
-        resolveCellPx(
-          window.innerWidth,
-          window.innerHeight,
-          nextCols,
-          nextMinCell,
-          nextVisibleRows
-        )
+      const nextCellPx = resolveCellPx(
+        layoutWidth,
+        window.innerHeight,
+        nextCols,
+        nextMinCell,
+        nextVisibleRows
+      );
+      setCellPx(nextCellPx);
+      document.documentElement.style.setProperty(
+        "--grid-cell",
+        `${nextCellPx}px`
       );
     };
 

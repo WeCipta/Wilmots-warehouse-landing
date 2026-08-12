@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { siteContent } from "@/lib/site-content";
+import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(SplitText);
 
@@ -12,7 +13,12 @@ const WEIGHT_PEAK = 900;
 const WEIGHT_FLOOR = 700;
 const FALLOFF_RADIUS = 110;
 
-export function HeroTitle() {
+const [titleLine1, titleLine2] = (() => {
+  const parts = siteContent.hero.title.trim().split(/\s+/);
+  return [parts[0] ?? siteContent.hero.title, parts.slice(1).join(" ")];
+})();
+
+export function HeroTitle({ className }: { className?: string }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const charsRef = useRef<Element[]>([]);
 
@@ -22,11 +28,15 @@ export function HeroTitle() {
       if (!el) return;
 
       const split = SplitText.create(el, {
-        type: "chars",
-        charsClass: "hero-title-char inline-block",
+        type: "chars,words",
+        charsClass: "hero-title-char",
+        wordsClass: "hero-title-word",
+        autoSplit: true,
+        onSplit(self) {
+          charsRef.current = self.chars;
+          gsap.set(self.chars, { fontWeight: WEIGHT_PEAK });
+        },
       });
-      charsRef.current = split.chars;
-      gsap.set(split.chars, { fontWeight: WEIGHT_PEAK });
 
       return () => {
         charsRef.current = [];
@@ -65,11 +75,20 @@ export function HeroTitle() {
     <h1
       ref={titleRef}
       data-follow-text
-      className="sm:text-5xl md:text-6xl text-4xl font-black tracking-tight"
+      className={cn(
+        "text-7xl font-black tracking-tight sm:text-8xl md:text-8xl",
+        className
+      )}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
     >
-      {siteContent.hero.title}
+      {titleLine1}
+      {titleLine2 ? (
+        <>
+          <br />
+          {titleLine2}
+        </>
+      ) : null}
     </h1>
   );
 }

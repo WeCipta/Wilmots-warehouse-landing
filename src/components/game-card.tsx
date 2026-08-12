@@ -6,6 +6,11 @@ import gsap from "gsap";
 import { cn } from "@/lib/utils";
 import { useFollowMouse } from "@/components/follow-mouse";
 import { GRID_CELL } from "@/lib/grid";
+import {
+  CARD_BACK_SRC,
+  pickRandomCardFace,
+  resolveCardFaceSrc,
+} from "@/lib/card-faces";
 
 export type CardVariant = "face-up" | "face-down";
 
@@ -55,7 +60,7 @@ function LensFace({
       style={{ clipPath }}
     >
       <Image
-        src={`/cards/${src}`}
+        src={resolveCardFaceSrc(src)}
         alt={alt}
         width={imageSize}
         height={imageSize}
@@ -85,13 +90,26 @@ export function GameCard({
   const flipInnerRef = useRef<HTMLSpanElement>(null);
   const imageSize = typeof size === "number" ? size : GRID_CELL;
   const fillsParent = typeof size === "string";
-  const useFlip = !lens && !!src && typeof flipped === "boolean";
 
-  const showLensFace = lens && !!src;
+  const [randomFace, setRandomFace] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (src) {
+      setRandomFace(null);
+      return;
+    }
+    setRandomFace(pickRandomCardFace());
+  }, [src]);
+
+  const faceSrc = src ?? randomFace;
+  const resolvedFace = faceSrc ? resolveCardFaceSrc(faceSrc) : null;
+  const useFlip = !lens && !!resolvedFace && typeof flipped === "boolean";
+
+  const showLensFace = lens && !!resolvedFace;
   const imageSrc =
-    lens || variant === "face-down" || !src
-      ? "/cards/back.svg"
-      : `/cards/${src}`;
+    lens || variant === "face-down" || !resolvedFace
+      ? CARD_BACK_SRC
+      : resolvedFace;
 
   useEffect(() => {
     if (!lens) return;
@@ -192,7 +210,7 @@ export function GameCard({
       >
         <span className="absolute inset-0 overflow-hidden rounded-[10px] [backface-visibility:hidden]">
           <Image
-            src="/cards/back.svg"
+            src={CARD_BACK_SRC}
             alt=""
             width={imageSize}
             height={imageSize}
@@ -203,7 +221,7 @@ export function GameCard({
         </span>
         <span className="absolute inset-0 overflow-hidden rounded-[10px] [backface-visibility:hidden] [transform:rotateY(180deg)]">
           <Image
-            src={`/cards/${src}`}
+            src={resolvedFace!}
             alt={alt}
             width={imageSize}
             height={imageSize}
@@ -236,7 +254,9 @@ export function GameCard({
         draggable={false}
         priority={false}
       />
-      {showLensFace && <LensFace src={src} alt={alt} imageSize={imageSize} />}
+      {showLensFace && (
+        <LensFace src={faceSrc!} alt={alt} imageSize={imageSize} />
+      )}
     </span>
   );
 

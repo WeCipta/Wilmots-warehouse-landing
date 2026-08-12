@@ -29,15 +29,29 @@ export const siteContent = {
     tagline: "Organize the warehouse with memory and imagination.",
     cta: "Order Now",
     content: {
-      mobile: { colStart: 1, colEnd: 7, rowStart: 2, rowEnd: 4 },
-      tablet: { colStart: 3, colEnd: 9, rowStart: 3, rowEnd: 5 },
-      desktop: { colStart: 5, colEnd: 11, rowStart: 3, rowEnd: 5 },
+      mobile: { colStart: 1, colEnd: 7, rowStart: 7, rowEnd: 10 },
+      tablet: { colStart: 1, colEnd: 11, rowStart: 7, rowEnd: 10 },
+      desktop: { colStart: 1, colEnd: 15, rowStart: 7, rowEnd: 10 },
+    } satisfies Record<GridBreakpoint, ContentSpan>,
+  },
+  description: {
+    body: "In this cooperative game, your team uses silly stories to memorize the locations of 35 face-down product tiles, then races a five-minute timer to match them with customer cards!",
+    content: {
+      mobile: { colStart: 2, colEnd: 6, rowStart: 1, rowEnd: 100 },
+      tablet: { colStart: 3, colEnd: 9, rowStart: 1, rowEnd: 100 },
+      desktop: { colStart: 4, colEnd: 12, rowStart: 1, rowEnd: 100 },
     } satisfies Record<GridBreakpoint, ContentSpan>,
   },
 };
 
 export function getHeroContentSpan(breakpoint: GridBreakpoint): ContentSpan {
   return siteContent.hero.content[breakpoint];
+}
+
+export function getDescriptionContentSpan(
+  breakpoint: GridBreakpoint
+): ContentSpan {
+  return siteContent.description.content[breakpoint];
 }
 
 export function contentSpanStyle(span: ContentSpan): CSSProperties {
@@ -53,6 +67,20 @@ export function isContentCellBlocked(
   row: number
 ): boolean {
   const span = siteContent.hero.content[breakpoint];
+  return (
+    col >= span.colStart &&
+    col < span.colEnd &&
+    row >= span.rowStart &&
+    row < span.rowEnd
+  );
+}
+
+export function isDescriptionCellBlocked(
+  breakpoint: GridBreakpoint,
+  col: number,
+  row: number
+): boolean {
+  const span = siteContent.description.content[breakpoint];
   return (
     col >= span.colStart &&
     col < span.colEnd &&
