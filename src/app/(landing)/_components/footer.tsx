@@ -7,7 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 import { CARD_FACES } from "@/lib/card-faces";
 import { siteContent } from "@/lib/site-content";
 
-const CARDS_COUNT = 40;
+const CARDS_COUNT = 12;
 const CARD_SIZE = 200;
 
 const FOOTER_ACCENTS = [
@@ -96,10 +96,7 @@ export default function Footer() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
+        setInView(entries[0].isIntersecting);
       },
       { threshold: 0.1 }
     );
@@ -121,13 +118,14 @@ export default function Footer() {
     const width = sceneRef.current.clientWidth;
     const height = sceneRef.current.clientHeight;
 
-    // Boundaries (Made very thick to prevent tunneling)
+    // Boundaries (Made very thick and tall to prevent tunneling and escaping)
     const ground = Matter.Bodies.rectangle(width / 2, height + 250, width * 2, 500, { isStatic: true });
-    const wallLeft = Matter.Bodies.rectangle(-250, height / 2, 500, height * 2, { isStatic: true });
-    const wallRight = Matter.Bodies.rectangle(width + 250, height / 2, 500, height * 2, { isStatic: true });
-    const ceiling = Matter.Bodies.rectangle(width / 2, -1500, width * 2, 500, { isStatic: true });
+    // Extend walls far upwards so thrown cards bounce back and don't escape
+    const wallLeft = Matter.Bodies.rectangle(-250, -5000, 500, 15000, { isStatic: true });
+    const wallRight = Matter.Bodies.rectangle(width + 250, -5000, 500, 15000, { isStatic: true });
     
-    Matter.Composite.add(world, [ground, wallLeft, wallRight, ceiling]);
+    // We intentionally do not add a ceiling, so cards can be thrown high and fall back down via gravity
+    Matter.Composite.add(world, [ground, wallLeft, wallRight]);
 
     const cardBodies = cards.map((card, i) => {
       // stagger drop vertically
@@ -197,7 +195,7 @@ export default function Footer() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 h-screen w-full bg-background overflow-hidden relative">
-      <div className="bg-white text-black w-full h-[50vh] md:h-full px-8 pb-8 pt-28 md:px-6 md:pb-8 md:pt-40 flex flex-col justify-between relative z-10 pointer-events-auto border-r border-black/10">
+      <div className="bg-white text-black w-full h-full px-8 pb-8 pt-28 md:px-6 md:pb-8 md:pt-40 flex flex-col justify-between relative z-10 pointer-events-auto border-r border-black/10">
         <div>
           <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-10 leading-[0.9]">
             {`Wilmot's`}<br/>Warehouse
@@ -221,7 +219,7 @@ export default function Footer() {
         </div>
       </div>
       <div 
-        className="relative h-[50vh] md:h-full bg-background overflow-hidden flex flex-col" 
+        className="relative h-full bg-background overflow-hidden hidden md:flex flex-col" 
         ref={sceneRef}
       > 
         {cards.map((card) => (

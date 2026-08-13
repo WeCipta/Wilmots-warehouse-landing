@@ -23,7 +23,6 @@ const NAV_ACCENTS = [
 ] as const;
 
 function pickAccent(previous?: string) {
-  if (NAV_ACCENTS.length === 1) return NAV_ACCENTS[0];
   let next = NAV_ACCENTS[Math.floor(Math.random() * NAV_ACCENTS.length)];
   while (next === previous) {
     next = NAV_ACCENTS[Math.floor(Math.random() * NAV_ACCENTS.length)];
