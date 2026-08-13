@@ -8,7 +8,73 @@ import { CARD_FACES } from "@/lib/card-faces";
 import { siteContent } from "@/lib/site-content";
 
 const CARDS_COUNT = 40;
-const CARD_SIZE = 200; // Increased size
+const CARD_SIZE = 200;
+
+const FOOTER_ACCENTS = [
+  "var(--btn-red)",
+  "var(--btn-orange)",
+  "var(--btn-yellow)",
+  "var(--btn-green)",
+  "var(--btn-blue)",
+  "var(--btn-pink)",
+  "var(--btn-salmon)",
+] as const;
+
+function pickAccent(previous?: string) {
+  let next = FOOTER_ACCENTS[Math.floor(Math.random() * FOOTER_ACCENTS.length)];
+  while (next === previous) {
+    next = FOOTER_ACCENTS[Math.floor(Math.random() * FOOTER_ACCENTS.length)];
+  }
+  return next;
+}
+
+function ColorfulLink({ label, href }: { label: string; href: string }) {
+  const accentRef = useRef<string>(FOOTER_ACCENTS[0]);
+  const [accent, setAccent] = useState<string | undefined>();
+
+  return (
+    <a 
+      href={href}
+      onPointerEnter={() => {
+        const next = pickAccent(accentRef.current);
+        accentRef.current = next;
+        setAccent(next);
+      }}
+      onPointerLeave={() => setAccent(undefined)}
+      className="text-3xl md:text-5xl font-black tracking-tight text-black/70 hover:translate-x-2 transition-transform duration-300 w-fit"
+      style={{
+        color: accent || "rgba(0,0,0,0.7)",
+      }}
+    >
+      {label}
+    </a>
+  );
+}
+
+function ColorfulButton({ href, children }: { href: string; children: React.ReactNode }) {
+  const accentRef = useRef<string>(FOOTER_ACCENTS[0]);
+  const [accent, setAccent] = useState<string | undefined>();
+
+  return (
+    <a 
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onPointerEnter={() => {
+        const next = pickAccent(accentRef.current);
+        accentRef.current = next;
+        setAccent(next);
+      }}
+      onPointerLeave={() => setAccent(undefined)}
+      className="inline-flex items-center justify-center gap-2 text-white px-8 py-4 rounded-2xl text-xl font-bold hover:scale-105 hover:-rotate-2 transition-transform duration-300 w-fit shadow-xl"
+      style={{
+        backgroundColor: accent || "#000",
+      }}
+    >
+      {children}
+    </a>
+  );
+}
 
 export default function Footer() {
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -55,11 +121,11 @@ export default function Footer() {
     const width = sceneRef.current.clientWidth;
     const height = sceneRef.current.clientHeight;
 
-    // Boundaries
-    const ground = Matter.Bodies.rectangle(width / 2, height + 50, width * 2, 100, { isStatic: true });
-    const wallLeft = Matter.Bodies.rectangle(-50, height / 2, 100, height * 2, { isStatic: true });
-    const wallRight = Matter.Bodies.rectangle(width + 50, height / 2, 100, height * 2, { isStatic: true });
-    const ceiling = Matter.Bodies.rectangle(width / 2, -1500, width * 2, 100, { isStatic: true });
+    // Boundaries (Made very thick to prevent tunneling)
+    const ground = Matter.Bodies.rectangle(width / 2, height + 250, width * 2, 500, { isStatic: true });
+    const wallLeft = Matter.Bodies.rectangle(-250, height / 2, 500, height * 2, { isStatic: true });
+    const wallRight = Matter.Bodies.rectangle(width + 250, height / 2, 500, height * 2, { isStatic: true });
+    const ceiling = Matter.Bodies.rectangle(width / 2, -1500, width * 2, 500, { isStatic: true });
     
     Matter.Composite.add(world, [ground, wallLeft, wallRight, ceiling]);
 
@@ -116,8 +182,8 @@ export default function Footer() {
       if (sceneRef.current) {
         const newWidth = sceneRef.current.clientWidth;
         const newHeight = sceneRef.current.clientHeight;
-        Matter.Body.setPosition(ground, { x: newWidth / 2, y: newHeight + 50 });
-        Matter.Body.setPosition(wallRight, { x: newWidth + 50, y: newHeight / 2 });
+        Matter.Body.setPosition(ground, { x: newWidth / 2, y: newHeight + 250 });
+        Matter.Body.setPosition(wallRight, { x: newWidth + 250, y: newHeight / 2 });
       }
     };
     window.addEventListener("resize", handleResize);
@@ -138,26 +204,15 @@ export default function Footer() {
           </h2>
           <nav className="flex flex-col gap-3">
             {siteContent.nav.links.map((link) => (
-              <a 
-                key={link.href} 
-                href={link.href}
-                className="text-3xl md:text-5xl font-black tracking-tight text-black/70 hover:text-black hover:translate-x-2 transition-all duration-300 w-fit"
-              >
-                {link.label}
-              </a>
+              <ColorfulLink key={link.href} href={link.href} label={link.label} />
             ))}
           </nav>
         </div>
         
         <div className="flex flex-col gap-8 mt-12">
-          <a 
-            href={siteContent.orderUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-2xl text-xl font-bold hover:scale-105 hover:-rotate-2 transition-transform duration-300 w-fit shadow-xl"
-          >
+          <ColorfulButton href={siteContent.orderUrl}>
             Order the Game <ArrowUpRight className="w-6 h-6" />
-          </a>
+          </ColorfulButton>
           
           <div className="text-xs md:text-sm font-bold text-black/40 uppercase tracking-[0.2em] flex flex-col gap-2">
             <p>Created by {siteContent.credits.creators.map(c => c.name).join(", ")}</p>
