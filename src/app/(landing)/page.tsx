@@ -2,6 +2,7 @@ import { Description } from "@/app/(landing)/_components/description";
 import { Hero } from "@/app/(landing)/_components/hero";
 import { LoadingScreen } from "@/app/(landing)/_components/loading-screen";
 import Tutorial from "./_components/tutorial";
+import Footer from "./_components/footer";
 
 export default function Home() {
   return (
@@ -9,7 +10,8 @@ export default function Home() {
       <LoadingScreen />
       <Hero />
       <Description />
-      <Tutorial />
+      {/* <Tutorial /> */}
+      <Footer/>
     </main>
   );
 }

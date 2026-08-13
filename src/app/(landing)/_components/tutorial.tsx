@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useGridMetrics } from "@/hooks/use-grid-metrics";
 
 const STEPS = [
   {
@@ -40,14 +41,34 @@ const STEPS = [
   },
 ];
 
-// Width of the left border strip (px)
-const LEFT_W = 56;
-// Height of the bottom border strip (px)
-const BOTTOM_H = 56;
-// Height of cards row below bottom border (px)
-const CARDS_H = 104;
+const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday"] as const;
+
+// Cards: back on Monday, rule on Tue–Fri
+const CARD_SRCS = [
+  "/cards/backs/back.svg",
+  "/cards/backs/rule.svg",
+  "/cards/backs/rule.svg",
+  "/cards/backs/rule.svg",
+  "/cards/backs/rule.svg",
+];
 
 export default function Tutorial() {
+  const grid = useGridMetrics();
+  const isMobile = grid.breakpoint === "mobile";
+  const isTablet = grid.breakpoint === "tablet";
+
+  // Responsive board dimensions
+  // On mobile: leftW=0 so left border + corner pieces are hidden,
+  // day slots fill full width matching the section grid above.
+  const leftW   = isMobile ? 0   : isTablet ? 44  : 56;
+  const bottomH = isMobile ? 36  : isTablet ? 46  : 56;
+  const cardSize = isMobile ? 52  : isTablet ? 70  : 96;
+  const cardsH  = cardSize + 8;
+
+  // Cell size for the board grid — matches the global grid cell for desktop,
+  // and scales proportionally for smaller breakpoints.
+  const boardCellPx = isMobile ? 48 : isTablet ? 64 : grid.cellPx;
+
   return (
     <section
       id="how-to-play"
@@ -55,8 +76,10 @@ export default function Tutorial() {
       style={{ minHeight: "100svh" }}
     >
       <div className="grid h-full min-h-[inherit] grid-cols-1 lg:grid-cols-2">
-        <div className="flex flex-col justify-center gap-10 px-8 sm:px-12 md:px-16 lg:py-24">
-          <h2 className="text-5xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl lg:text-7xl">
+
+        {/* ── LEFT COLUMN ── */}
+        <div className="flex flex-col justify-center gap-8 px-8 py-16 sm:px-12 sm:py-20 md:px-16 lg:py-24">
+          <h2 className="text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-5xl lg:text-7xl">
             How to Play
           </h2>
 
@@ -64,24 +87,24 @@ export default function Tutorial() {
             {STEPS.map((step) => (
               <li
                 key={step.number}
-                className="group relative flex gap-5 border-t border-white/10 py-5 last:border-b last:border-white/10"
+                className="group relative flex gap-4 border-t border-white/10 py-4 last:border-b last:border-white/10 sm:gap-5 sm:py-5"
               >
                 {/* Step number */}
-                <span className="mt-0.5 w-10 shrink-0 font-mono text-xs font-bold text-white/40">
+                <span className="mt-0.5 w-8 shrink-0 font-mono text-xs font-bold text-white/40 sm:w-10">
                   {step.number}
                 </span>
 
                 {/* Content */}
                 <div className="flex flex-col gap-1">
                   <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="text-sm font-black uppercase tracking-wide text-white">
+                    <span className="text-xs font-black uppercase tracking-wide text-white sm:text-sm">
                       {step.title}
                     </span>
                     <span className="rounded border border-white/20 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-white/40">
                       {step.subtitle}
                     </span>
                   </div>
-                  <p className="text-sm leading-relaxed text-white/50">
+                  <p className="text-xs leading-relaxed text-white/50 sm:text-sm">
                     {step.description}
                   </p>
                 </div>
@@ -96,142 +119,118 @@ export default function Tutorial() {
           </ol>
         </div>
 
-        {/* ── RIGHT COLUMN: board fills the column edge-to-edge, no padding ── */}
-        <div className="relative overflow-hidden">
-
-          {/* Left border strip — only alongside the grid, not the cards row */}
-          <div
-            className="absolute left-0 top-0 z-10"
-            style={{ width: LEFT_W, bottom: CARDS_H }}
-          >
-            <Image
-              src="/board/left.webp"
-              alt="Board left border"
-              fill
-              className="object-cover object-top"
-              sizes="56px"
-              priority
-            />
-          </div>
+        {/* ── RIGHT COLUMN: board fills edge-to-edge ── */}
+        {/*
+         * On mobile/tablet this column is stacked below text.
+         * We give it a fixed viewport-relative height so the absolute
+         * board elements have a containing block to anchor to.
+         */}
+        <div
+          className="relative overflow-hidden lg:h-auto"
+          style={{ minHeight: isMobile ? "55svh" : isTablet ? "50svh" : undefined }}
+        >
+          {/* Left border strip — hidden on mobile, stops above cards row on tablet/desktop */}
+          {!isMobile && (
+            <div
+              className="absolute left-0 top-0 z-10"
+              style={{ width: leftW, bottom: cardsH }}
+            >
+              <Image
+                src="/board/left.webp"
+                alt="Board left border"
+                fill
+                className="object-cover object-top"
+                sizes={`${leftW}px`}
+                priority
+              />
+            </div>
+          )}
 
           {/*
            * Inner grid — anchored bottom-left, overflows top + right.
-           * repeat(20) guarantees full coverage with no right gap.
+           * repeat(20) ensures no right-side gap.
            */}
           <div
             className="absolute left-0 right-0 top-0 overflow-hidden"
-            style={{ bottom: BOTTOM_H + CARDS_H }}
+            style={{ bottom: bottomH + cardsH }}
           >
             <div
               className="absolute bottom-0"
               style={{
-                left: LEFT_W,
+                left: leftW,
                 display: "grid",
-                gridTemplateColumns: `repeat(20, var(--grid-cell))`,
-                gridAutoRows: "var(--grid-cell)",
+                gridTemplateColumns: `repeat(20, ${boardCellPx}px)`,
+                gridAutoRows: `${boardCellPx}px`,
               }}
             >
               {Array.from({ length: 200 }).map((_, i) => (
                 <div
                   key={i}
                   className="border border-white/20 bg-background"
-                  style={{ width: "var(--grid-cell)", height: "var(--grid-cell)" }}
+                  style={{ width: boardCellPx, height: boardCellPx }}
                 />
               ))}
             </div>
           </div>
 
           {/*
-           * Bottom border — composed from individual day slot images.
-           * Structure: [left-side] [monday] [tuesday] [wednesday] [thursday] [friday]
-           * Using flex so each day slot stretches equally.
+           * Bottom border row.
+           * Mobile: only the 5 day slots, no corner pieces → equal spacing.
+           * Tablet/Desktop: left-side + days + right-side.
            */}
           <div
             className="absolute left-0 right-0 z-10 flex"
-            style={{ bottom: CARDS_H, height: BOTTOM_H }}
+            style={{ bottom: cardsH, height: bottomH }}
           >
-            {/* Left corner piece */}
-            <div className="relative shrink-0" style={{ width: LEFT_W }}>
-              <Image src="/board/left-side.webp" alt="" fill className="object-cover object-top" sizes="56px" />
-            </div>
-            {/* Day slots — equal flex */}
-            {["monday", "tuesday", "wednesday", "thursday", "friday"].map((day) => (
+            {!isMobile && (
+              <div className="relative shrink-0" style={{ width: leftW }}>
+                <Image src="/board/left-side.webp" alt="" fill className="object-cover object-top" sizes={`${leftW}px`} />
+              </div>
+            )}
+            {DAYS.map((day) => (
               <div key={day} className="relative flex-1">
-                <Image src={`/board/${day}.webp`} alt={day} fill className="object-cover" sizes="10vw" />
+                <Image src={`/board/${day}.webp`} alt={day} fill className="object-cover" sizes="20vw" />
               </div>
             ))}
-            {/* Right side piece */}
-            <div className="relative shrink-0" style={{ width: LEFT_W }}>
-              <Image src="/board/right-side.webp" alt="" fill className="object-cover object-top" sizes="56px" />
-            </div>
+            {!isMobile && (
+              <div className="relative shrink-0" style={{ width: leftW }}>
+                <Image src="/board/right-side.webp" alt="" fill className="object-cover object-top" sizes={`${leftW}px`} />
+              </div>
+            )}
           </div>
 
           {/*
-           * Cards row — same flex structure as the bottom border so cards are
-           * perfectly centered under each day slot image.
-           * back.svg → Monday, rule.svg × 3 → Tue / Wed / Thu, Friday → empty
+           * Cards row — same flex structure as bottom border for perfect alignment.
+           * back.svg → Monday, rule.svg × 4 → Tue–Fri
            */}
           <div
             className="absolute bottom-0 left-0 right-0 z-20 flex items-start"
-            style={{ height: CARDS_H, paddingTop: 6 }}
+            style={{ height: cardsH, paddingTop: 4 }}
           >
-            {/* Spacer matching left-side width */}
-            <div className="shrink-0" style={{ width: LEFT_W }} />
+            {/* Left spacer — only on tablet/desktop */}
+            {!isMobile && <div className="shrink-0" style={{ width: leftW }} />}
 
-            {/* Monday → back.svg */}
-            <div className="flex flex-1 justify-center">
-              <div
-                className="relative overflow-hidden rounded-[10px] ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85)] bg-[#FFFDEB]"
-                style={{ width: 96, height: 96 }}
-              >
-                <Image src="/cards/backs/back.svg" alt="Card back" fill className="object-cover" />
+            {DAYS.map((day, idx) => (
+              <div key={day} className="flex flex-1 justify-center">
+                <div
+                  className="relative overflow-hidden rounded-[10px] ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85)] bg-[#FFFDEB]"
+                  style={{ width: cardSize, height: cardSize }}
+                >
+                  <Image
+                    src={CARD_SRCS[idx]}
+                    alt={idx === 0 ? "Card back" : "Rule card"}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               </div>
-            </div>
+            ))}
 
-            {/* Tuesday → rule.svg */}
-            <div className="flex flex-1 justify-center">
-              <div
-                className="relative overflow-hidden rounded-[10px] ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85)] bg-[#FFFDEB]"
-                style={{ width: 96, height: 96 }}
-              >
-                <Image src="/cards/backs/rule.svg" alt="Rule card" fill className="object-cover" />
-              </div>
-            </div>
-
-            {/* Wednesday → rule.svg */}
-            <div className="flex flex-1 justify-center">
-              <div
-                className="relative overflow-hidden rounded-[10px] ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85)] bg-[#FFFDEB]"
-                style={{ width: 96, height: 96 }}
-              >
-                <Image src="/cards/backs/rule.svg" alt="Rule card" fill className="object-cover" />
-              </div>
-            </div>
-
-            {/* Thursday → rule.svg */}
-            <div className="flex flex-1 justify-center">
-              <div
-                className="relative overflow-hidden rounded-[10px] ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85)] bg-[#FFFDEB]"
-                style={{ width: 96, height: 96 }}
-              >
-                <Image src="/cards/backs/rule.svg" alt="Rule card" fill className="object-cover" />
-              </div>
-            </div>
-
-            {/* Friday → rule.svg */}
-            <div className="flex flex-1 justify-center">
-              <div
-                className="relative overflow-hidden rounded-[10px] ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85)] bg-[#FFFDEB]"
-                style={{ width: 96, height: 96 }}
-              >
-                <Image src="/cards/backs/rule.svg" alt="Rule card" fill className="object-cover" />
-              </div>
-            </div>
-
-            {/* Spacer matching right-side width */}
-            <div className="shrink-0" style={{ width: LEFT_W }} />
+            {/* Right spacer — only on tablet/desktop */}
+            {!isMobile && <div className="shrink-0" style={{ width: leftW }} />}
           </div>
         </div>
+
       </div>
     </section>
   );
