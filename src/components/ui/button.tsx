@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import type { MaybeBaseUIEvent } from "@base-ui/react/internals/types"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -46,10 +47,11 @@ const buttonVariants = cva(
 type ButtonAccent = (typeof BUTTON_ACCENTS)[number]
 
 function pickAccent(previous?: ButtonAccent): ButtonAccent {
-  if (BUTTON_ACCENTS.length === 1) return BUTTON_ACCENTS[0]
-  let next = BUTTON_ACCENTS[Math.floor(Math.random() * BUTTON_ACCENTS.length)]
+  const count = BUTTON_ACCENTS.length as number
+  if (count === 1) return BUTTON_ACCENTS[0]
+  let next = BUTTON_ACCENTS[Math.floor(Math.random() * count)]
   while (next === previous) {
-    next = BUTTON_ACCENTS[Math.floor(Math.random() * BUTTON_ACCENTS.length)]
+    next = BUTTON_ACCENTS[Math.floor(Math.random() * count)]
   }
   return next
 }
@@ -65,11 +67,11 @@ function Button({
   const accentRef = React.useRef<ButtonAccent>(BUTTON_ACCENTS[0])
   const [accent, setAccent] = React.useState<ButtonAccent>(BUTTON_ACCENTS[0])
 
-  const handleMouseEnter = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseEnter = (event: MaybeBaseUIEvent<React.MouseEvent<HTMLButtonElement>>) => {
     const next = pickAccent(accentRef.current)
     accentRef.current = next
     setAccent(next)
-    onMouseEnter?.(event)
+    onMouseEnter?.(event as never)
   }
 
   return (
