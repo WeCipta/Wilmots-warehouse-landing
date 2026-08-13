@@ -184,7 +184,7 @@ export default function Footer() {
           </nav>
         </div>
         
-        <div className="flex flex-col gap-8 mt-12 relative z-10">
+        <div className="flex flex-col gap-32 mt-12 relative z-10">
           <Button
             variant="filled"
             size="lg"
