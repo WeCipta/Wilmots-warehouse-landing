@@ -3,13 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { GridOverlay } from "@/components/grid-overlay";
 import { GameCard } from "@/components/game-card";
 import { useGridMetrics } from "@/hooks/use-grid-metrics";
-import { siteContent } from "@/lib/site-content";
 import { NavLogo } from "./nav-logo";
-
-const NAV_LINKS = siteContent.nav.links;
+import { NavMenu } from "./nav-menu";
 
 function NavTooltip({
   label,
@@ -111,53 +108,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation menu"
-        className={cn(
-          "fixed inset-0 z-40 flex flex-col transition-all duration-300 ease-in-out",
-          menuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        )}
-      >
-        <div className="absolute inset-0 bg-background">
-          <GridOverlay aria-hidden="true" />
-        </div>
-
-        <nav
-          aria-label="Primary navigation"
-          className="relative z-10 flex flex-col justify-center items-center gap-3 flex-1"
-          style={{ paddingBottom: cellSizeCss }}
-        >
-          {NAV_LINKS.map(({ label, href }, i) => (
-            <a
-              key={href}
-              href={href}
-              onClick={() => setMenuOpen(false)}
-              className={cn(
-                "group relative font-black uppercase tracking-tight text-foreground/70 hover:text-foreground transition-colors duration-150",
-                i === 0 && "text-4xl sm:text-5xl",
-                i === 1 && "text-3xl sm:text-4xl",
-                i === 2 && "text-2xl sm:text-3xl",
-                i === 3 && "text-xl sm:text-2xl",
-                i >= 4 && "text-lg sm:text-xl"
-              )}
-              style={{
-                opacity: menuOpen ? 1 : 0,
-                transform: menuOpen ? "translateY(0)" : "translateY(12px)",
-                transition: `opacity 250ms ${i * 50 + 100}ms ease-out, transform 250ms ${i * 50 + 100}ms ease-out, color 150ms ease`,
-              }}
-            >
-              <span className="relative">
-                {label}
-                <span className="absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
-              </span>
-            </a>
-          ))}
-        </nav>
-      </div>
+      <NavMenu open={menuOpen} onNavigate={() => setMenuOpen(false)} />
     </>
   );
 }

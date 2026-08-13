@@ -56,7 +56,7 @@ export function HeroTitle({ className }: { className?: string }) {
       const cy = rect.top + rect.height / 2;
       const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
       const t = Math.min(dist / FALLOFF_RADIUS, 1);
-      const weight = WEIGHT_PEAK + (WEIGHT_FLOOR - WEIGHT_PEAK) * t;
+      const weight = WEIGHT_FLOOR + (WEIGHT_PEAK - WEIGHT_FLOOR) * t;
       gsap.set(char, { fontWeight: weight });
     }
   };
@@ -76,7 +76,7 @@ export function HeroTitle({ className }: { className?: string }) {
       ref={titleRef}
       data-follow-text
       className={cn(
-        "text-7xl font-black tracking-tight sm:text-8xl md:text-8xl",
+        "whitespace-nowrap text-5xl font-black tracking-tight sm:text-7xl xl:text-8xl",
         className
       )}
       onPointerMove={handlePointerMove}

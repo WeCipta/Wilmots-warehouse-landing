@@ -34,6 +34,7 @@ const CHAR_DIM_OPACITY = 0.14;
 
 export function Description() {
   const sectionRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
   const wordsRef = useRef<HTMLElement[]>([]);
   const trailTimersRef = useRef<Map<HTMLElement, gsap.core.Tween>>(new Map());
@@ -80,9 +81,9 @@ export function Description() {
 
   useGSAP(
     () => {
-      const section = sectionRef.current;
+      const content = contentRef.current;
       const el = paragraphRef.current;
-      if (!section || !el) return;
+      if (!content || !el) return;
 
       const split = SplitText.create(el, {
         type: "chars,words",
@@ -108,7 +109,7 @@ export function Description() {
             ease: "none",
             stagger: 0.04,
             scrollTrigger: {
-              trigger: section,
+              trigger: content,
               start: "top top",
               end: "bottom bottom",
               scrub: 0.65,
@@ -166,32 +167,48 @@ export function Description() {
       )}
       style={{ minHeight: sectionMinHeight }}
     >
-      <GridOverlay
-        data-grid="description-bg"
-        aria-hidden="true"
-        cols={grid.cols}
-        rows={descRows}
-        cell={grid.cellPx}
-      />
+      <div
+        className="absolute inset-0"
+        style={{
+          maskImage:
+            "linear-gradient(to bottom, #000 calc(100% - 45vh), transparent)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, #000 calc(100% - 45vh), transparent)",
+        }}
+      >
+        <GridOverlay
+          data-grid="description-bg"
+          aria-hidden="true"
+          cols={grid.cols}
+          rows={descRows}
+          cell={grid.cellPx}
+        />
 
-      <HeroCardGrid
-        key={`${grid.breakpoint}-${descRows}`}
-        cards={layout.cards}
-        cols={grid.cols}
-        rows={descRows}
-        gridStyle={descGridStyle}
-        isUiBlocked={layout.isUiBlocked}
-        lensEnabled={hasFinePointer}
+        <HeroCardGrid
+          key={`${grid.breakpoint}-${descRows}`}
+          cards={layout.cards}
+          cols={grid.cols}
+          rows={descRows}
+          gridStyle={descGridStyle}
+          isUiBlocked={layout.isUiBlocked}
+          lensEnabled={hasFinePointer}
+        />
+      </div>
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-15 h-[45vh] bg-linear-to-t from-background from-25% via-background/80 to-transparent"
       />
 
       <div
+        ref={contentRef}
         className="pointer-events-none relative z-20"
-        style={{ minHeight: sectionMinHeight }}
+        style={{ minHeight: `calc(${sectionMinHeight}px - 45vh)` }}
       >
         <div className="sticky top-0 flex h-dvh items-center justify-center px-6 sm:px-10 md:px-16">
           <p
             ref={paragraphRef}
-            className="pointer-events-auto max-w-4xl text-center text-3xl uppercase font-black leading-[1.15] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+            className="pointer-events-auto max-w-4xl text-center text-2xl uppercase font-black leading-[1.15] tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl"
             onPointerMove={interactive ? handlePointerMove : undefined}
           >
             {siteContent.description.body}

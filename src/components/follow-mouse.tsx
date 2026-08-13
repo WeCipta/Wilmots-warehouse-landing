@@ -201,7 +201,7 @@ export function FollowMouseProvider({ children }: { children: ReactNode }) {
       const textEl = el?.closest("[data-follow-text]") ?? null;
       const overText = !!textEl;
       const overButton =
-        !overText && !!el?.closest('button, [data-slot="button"]');
+        !overText && !!el?.closest('a, button, [data-slot="button"]');
       const overLens =
         !overText &&
         !overButton &&

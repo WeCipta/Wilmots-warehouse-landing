@@ -8,8 +8,11 @@ export type ContentSpan = {
   rowEnd: number;
 };
 
+const ORDER_URL = "https://www.cmyk.games/products/wilmot";
+
 export const siteContent = {
   brand: "Wilmot's Warehouse",
+  orderUrl: ORDER_URL,
   meta: {
     title: "Wilmot's Warehouse",
     description:
@@ -19,14 +22,28 @@ export const siteContent = {
     links: [
       { label: "About", href: "#about" },
       { label: "How to Play", href: "#how-to-play" },
-      { label: "Tutorial", href: "#tutorial" },
+      { label: "Creators", href: "#creators" },
       { label: "Gallery", href: "#gallery" },
-      { label: "Order Now", href: "#order" },
     ],
+    product: {
+      portrait: "/images/nav/product-portrait.svg",
+      landscape: "/images/nav/product-landscape.svg",
+    },
+  },
+  credits: {
+    creators: [
+      { name: "Ricky Haggett" },
+      { name: "Richard Hogg" },
+      { name: "David King" },
+    ] as { name: string; href?: string }[],
+    publisher: {
+      name: "CMYK",
+      href: "https://www.cmyk.games",
+    },
   },
   hero: {
     title: "Wilmot's Warehouse",
-    tagline: "Organize the warehouse with memory and imagination.",
+    tagline: "Organize the warehouse with memory, story, and imagination.",
     cta: "Order Now",
     content: {
       mobile: { colStart: 1, colEnd: 7, rowStart: 7, rowEnd: 10 },

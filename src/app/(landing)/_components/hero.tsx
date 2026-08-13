@@ -49,15 +49,27 @@ export function Hero() {
         data-hero-content
         className="pointer-events-none absolute inset-x-0 top-0 z-20 flex h-dvh flex-col justify-end"
       >
-        <div className="pointer-events-auto grid w-full grid-cols-1 gap-4 border-t border-white/20 bg-background/90 px-4 py-5 backdrop-blur-sm sm:grid-cols-[minmax(0,1fr)_minmax(12rem,20rem)] sm:items-start sm:gap-x-8 sm:gap-y-5 sm:px-6 sm:py-6 md:px-8 md:py-7">
-          <HeroTitle className="min-w-0 text-left sm:max-w-[min(100%,42rem)] md:max-w-[min(100%,52rem)]" />
+        <div className="pointer-events-auto grid w-full grid-cols-1 gap-4 border-t border-white/20 bg-background/90 px-4 py-5 backdrop-blur-sm sm:gap-y-5 sm:px-6 sm:py-6 md:px-8 md:py-7 lg:grid-cols-[minmax(0,1fr)_minmax(12rem,20rem)] lg:items-start lg:gap-x-8">
+          <HeroTitle className="min-w-0 text-left lg:max-w-[min(100%,52rem)]" />
           <p
             data-follow-text
-            className="text-base font-semibold tracking-tight text-white/80 sm:row-span-2 sm:max-w-sm sm:justify-self-end sm:text-right sm:text-lg"
+            className="text-base font-semibold tracking-tight text-white/80 sm:text-lg lg:row-span-2 lg:max-w-sm lg:justify-self-end lg:text-right"
           >
             {siteContent.hero.tagline}
           </p>
-          <Button variant="filled" size="lg" className="justify-self-start">
+          <Button
+            variant="filled"
+            size="lg"
+            className="h-11 justify-self-start px-5 text-base sm:h-14 sm:px-8 sm:text-2xl"
+            nativeButton={false}
+            render={
+              <a
+                href={siteContent.orderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            }
+          >
             {siteContent.hero.cta}
           </Button>
         </div>
