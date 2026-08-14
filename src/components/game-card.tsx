@@ -22,7 +22,10 @@ export interface GameCardProps {
   className?: string;
   interactive?: boolean;
   lens?: boolean;
+  jiggle?: boolean;
+  jiggleEvery?: number;
   flipped?: boolean;
+  backSrc?: string;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
@@ -73,7 +76,7 @@ function LensFace({
 }
 
 const cardShellClass =
-  "relative select-none overflow-hidden shrink-0 ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.15)] rounded-[10px] will-change-transform";
+  "relative select-none overflow-hidden shrink-0 ring-[3px] ring-inset ring-white/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.15)] rounded-[6px] will-change-transform";
 
 export function GameCard({
   src,
@@ -83,7 +86,10 @@ export function GameCard({
   className,
   interactive = false,
   lens = false,
+  jiggle,
+  jiggleEvery,
   flipped,
+  backSrc,
   onClick,
 }: GameCardProps) {
   const cardRef = useRef<HTMLSpanElement>(null);
@@ -103,6 +109,7 @@ export function GameCard({
 
   const faceSrc = src ?? randomFace;
   const resolvedFace = faceSrc ? resolveCardFaceSrc(faceSrc) : null;
+  const resolvedBack = backSrc ? resolveCardFaceSrc(backSrc) : CARD_BACK_SRC;
   const useFlip = !lens && !!resolvedFace && typeof flipped === "boolean";
 
   const showLensFace = lens && !!resolvedFace;
@@ -112,7 +119,9 @@ export function GameCard({
       : resolvedFace;
 
   useEffect(() => {
-    if (!lens) return;
+    const useInterval = jiggleEvery != null && jiggleEvery > 0;
+    const allowLensJiggle = lens && jiggle !== false;
+    if (!allowLensJiggle && !useInterval) return;
     const el = cardRef.current;
     if (!el) return;
 
@@ -122,7 +131,8 @@ export function GameCard({
 
     const schedule = () => {
       if (cancelled) return;
-      delayTween = gsap.delayedCall(rand(6, 14), () => {
+      const delay = useInterval ? jiggleEvery : rand(6, 14);
+      delayTween = gsap.delayedCall(delay, () => {
         if (cancelled || !cardRef.current) return;
         const sign = Math.random() < 0.5 ? -1 : 1;
         shakeTl = gsap
@@ -159,7 +169,7 @@ export function GameCard({
       gsap.killTweensOf(el);
       gsap.set(el, { x: 0, rotation: 0 });
     };
-  }, [lens]);
+  }, [lens, jiggle, jiggleEvery]);
 
   const flipMountedRef = useRef(false);
 
@@ -208,9 +218,9 @@ export function GameCard({
         ref={flipInnerRef}
         className="relative block h-full w-full [transform-style:preserve-3d]"
       >
-        <span className="absolute inset-0 overflow-hidden rounded-[10px] [backface-visibility:hidden]">
+        <span className="absolute inset-0 overflow-hidden rounded-[6px] [backface-visibility:hidden]">
           <Image
-            src={CARD_BACK_SRC}
+            src={resolvedBack}
             alt=""
             width={imageSize}
             height={imageSize}
@@ -219,7 +229,7 @@ export function GameCard({
             priority={false}
           />
         </span>
-        <span className="absolute inset-0 overflow-hidden rounded-[10px] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+        <span className="absolute inset-0 overflow-hidden rounded-[6px] [backface-visibility:hidden] [transform:rotateY(180deg)]">
           <Image
             src={resolvedFace!}
             alt={alt}
@@ -265,7 +275,7 @@ export function GameCard({
       <div
         onClick={onClick}
         className={cn(
-          "appearance-none bg-transparent p-0 border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[10px]",
+          "appearance-none bg-transparent p-0 border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[6px]",
           fillsParent && "h-full w-full",
           lens ? "cursor-none" : "cursor-pointer"
         )}

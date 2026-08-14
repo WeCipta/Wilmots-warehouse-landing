@@ -15,16 +15,25 @@ export default function Footer() {
   const engineRef = useRef<Matter.Engine | null>(null);
   const runnerRef = useRef<Matter.Runner | null>(null);
 
-  const [cards] = useState(() => {
-    const shuffledFaces = [...CARD_FACES].sort(() => 0.5 - Math.random());
-    return Array.from({ length: CARDS_COUNT }).map((_, i) => ({
+  const [cards, setCards] = useState(() =>
+    Array.from({ length: CARDS_COUNT }, (_, i) => ({
       id: i,
-      src: shuffledFaces[i % shuffledFaces.length],
-    }));
-  });
+      src: CARD_FACES[i % CARD_FACES.length],
+    }))
+  );
 
   const cardRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const shuffledFaces = [...CARD_FACES].sort(() => 0.5 - Math.random());
+    setCards(
+      Array.from({ length: CARDS_COUNT }, (_, i) => ({
+        id: i,
+        src: shuffledFaces[i % shuffledFaces.length],
+      }))
+    );
+  }, []);
 
   // Trigger when scrolled into view
   useEffect(() => {

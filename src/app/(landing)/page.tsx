@@ -10,7 +10,7 @@ export default function Home() {
       <LoadingScreen />
       <Hero />
       <Description />
-      {/* <Tutorial /> */}
+      <Tutorial />
       <Footer/>
     </main>
   );

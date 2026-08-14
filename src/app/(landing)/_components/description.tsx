@@ -15,18 +15,10 @@ import {
 } from "@/lib/hero-grid-layout";
 import { gridStyle as buildGridStyle } from "@/lib/grid";
 import { siteContent } from "@/lib/site-content";
+import { BRAND_ACCENT_COLORS } from "@/lib/brand-accents";
 import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(SplitText, ScrollTrigger);
-
-const BRAND_COLORS = [
-  "var(--btn-red)",
-  "var(--btn-orange)",
-  "var(--btn-yellow)",
-  "var(--btn-green)",
-  "var(--btn-blue)",
-  "var(--btn-pink)",
-];
 
 const REST_COLOR = "#ffffff";
 const FALLOFF_RADIUS = 130;
@@ -144,7 +136,7 @@ export function Description() {
       );
       if (dist >= FALLOFF_RADIUS * 0.55) continue;
 
-      const color = BRAND_COLORS[i % BRAND_COLORS.length];
+      const color = BRAND_ACCENT_COLORS[i % BRAND_ACCENT_COLORS.length];
       trailTimersRef.current.get(word)?.kill();
       gsap.set(word, { color });
       const tween = gsap.to(word, {
@@ -171,9 +163,9 @@ export function Description() {
         className="absolute inset-0"
         style={{
           maskImage:
-            "linear-gradient(to bottom, #000 calc(100% - 45vh), transparent)",
+            "linear-gradient(to bottom, transparent, #000 45vh, #000 calc(100% - 45vh), transparent)",
           WebkitMaskImage:
-            "linear-gradient(to bottom, #000 calc(100% - 45vh), transparent)",
+            "linear-gradient(to bottom, transparent, #000 45vh, #000 calc(100% - 45vh), transparent)",
         }}
       >
         <GridOverlay
@@ -197,6 +189,10 @@ export function Description() {
 
       <div
         aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-15 h-[45vh] bg-linear-to-b from-background from-25% via-background/80 to-transparent"
+      />
+      <div
+        aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 z-15 h-[45vh] bg-linear-to-t from-background from-25% via-background/80 to-transparent"
       />
 
@@ -208,7 +204,7 @@ export function Description() {
         <div className="sticky top-0 flex h-dvh items-center justify-center px-6 sm:px-10 md:px-16">
           <p
             ref={paragraphRef}
-            className="pointer-events-auto max-w-4xl text-center text-2xl uppercase font-black leading-[1.15] tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl"
+            className="pointer-events-auto max-w-4xl text-center text-2xl uppercase font-black leading-[1.15] tracking-tight text-white [-webkit-text-stroke:0.08em_#000] [paint-order:stroke_fill] sm:text-3xl md:text-4xl lg:text-5xl"
             onPointerMove={interactive ? handlePointerMove : undefined}
           >
             {siteContent.description.body}

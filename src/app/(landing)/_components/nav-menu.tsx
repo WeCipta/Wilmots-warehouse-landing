@@ -1,35 +1,16 @@
 "use client";
 
-import { useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GridOverlay } from "@/components/grid-overlay";
 import { useGridMetrics } from "@/hooks/use-grid-metrics";
+import { useRandomAccent } from "@/hooks/use-random-accent";
 import { siteContent } from "@/lib/site-content";
 
 const NAV_LINKS = siteContent.nav.links;
 const PRODUCT = siteContent.nav.product;
 const CREDITS = siteContent.credits;
-
-const NAV_ACCENTS = [
-  "var(--btn-red)",
-  "var(--btn-orange)",
-  "var(--btn-yellow)",
-  "var(--btn-green)",
-  "var(--btn-blue)",
-  "var(--btn-pink)",
-  "var(--btn-salmon)",
-] as const;
-
-function pickAccent(previous?: string) {
-  if (NAV_ACCENTS.length === 1) return NAV_ACCENTS[0];
-  let next = NAV_ACCENTS[Math.floor(Math.random() * NAV_ACCENTS.length)];
-  while (next === previous) {
-    next = NAV_ACCENTS[Math.floor(Math.random() * NAV_ACCENTS.length)];
-  }
-  return next;
-}
 
 function isExternalHref(href: string, external?: boolean) {
   return external ?? href.startsWith("http");
@@ -58,18 +39,13 @@ function CreditName({
   name: string;
   href?: string;
 }) {
-  const accentRef = useRef<string>(NAV_ACCENTS[0]);
-  const [accent, setAccent] = useState<string | undefined>();
+  const { color, randomize, clear } = useRandomAccent();
   const className =
     "group inline-flex items-center gap-1 text-base font-semibold tracking-tight text-foreground sm:text-lg";
   const hoverProps = {
-    onPointerEnter: () => {
-      const next = pickAccent(accentRef.current);
-      accentRef.current = next;
-      setAccent(next);
-    },
-    onPointerLeave: () => setAccent(undefined),
-    style: { color: accent, transition: "color 150ms ease" } as const,
+    onPointerEnter: randomize,
+    onPointerLeave: clear,
+    style: { color, transition: "color 150ms ease" } as const,
   };
 
   const content = (
@@ -116,25 +92,20 @@ function NavLink({
   onNavigate: () => void;
 }) {
   const isExternal = isExternalHref(href, external);
-  const accentRef = useRef<string>(NAV_ACCENTS[0]);
-  const [accent, setAccent] = useState<string | undefined>();
+  const { color, randomize, clear } = useRandomAccent();
 
   return (
     <a
       href={href}
       onClick={onNavigate}
-      onPointerEnter={() => {
-        const next = pickAccent(accentRef.current);
-        accentRef.current = next;
-        setAccent(next);
-      }}
-      onPointerLeave={() => setAccent(undefined)}
+      onPointerEnter={randomize}
+      onPointerLeave={clear}
       {...(isExternal
         ? { target: "_blank", rel: "noopener noreferrer" }
         : undefined)}
       className="relative w-fit whitespace-nowrap font-black uppercase tracking-tight text-4xl text-foreground/70 sm:text-6xl"
       style={{
-        color: accent,
+        color,
         opacity: open ? 1 : 0,
         transform: open ? "translateY(0)" : "translateY(12px)",
         transition: `opacity 250ms ${index * 50 + 100}ms ease-out, transform 250ms ${index * 50 + 100}ms ease-out, color 150ms ease`,
