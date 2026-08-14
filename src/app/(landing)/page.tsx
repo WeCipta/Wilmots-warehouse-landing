@@ -3,6 +3,7 @@ import { Hero } from "@/app/(landing)/_components/hero";
 import { LoadingScreen } from "@/app/(landing)/_components/loading-screen";
 import Tutorial from "./_components/tutorial";
 import Footer from "./_components/footer";
+import { Gallery } from "./_components/gallery";
 import { Testimonials } from "./_components/testimonials";
 
 export default function Home() {
@@ -12,6 +13,7 @@ export default function Home() {
       <Hero />
       <Description />
       <Tutorial />
+      <Gallery />
       <Testimonials />
       <Footer/>
     </main>
