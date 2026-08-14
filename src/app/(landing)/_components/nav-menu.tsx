@@ -26,19 +26,13 @@ function ExternalLinkIcon({ className }: { className?: string }) {
         "transition-all duration-200 ease-out",
         "group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100",
         "group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100",
-        className
+        className,
       )}
     />
   );
 }
 
-function CreditName({
-  name,
-  href,
-}: {
-  name: string;
-  href?: string;
-}) {
+function CreditName({ name, href }: { name: string; href?: string }) {
   const { color, randomize, clear } = useRandomAccent();
   const className =
     "group inline-flex items-center gap-1 text-base font-semibold tracking-tight text-foreground sm:text-lg";
@@ -194,7 +188,9 @@ export function NavMenu({
       aria-hidden={!open}
       className={cn(
         "fixed inset-0 z-40 flex flex-col transition-all duration-300 ease-in-out",
-        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        open
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none",
       )}
     >
       <div className="absolute inset-0 bg-background">
