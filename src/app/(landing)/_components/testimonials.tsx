@@ -13,19 +13,19 @@ if (typeof window !== "undefined") {
 const TESTIMONIALS = [
   {
     name: "Jonathan",
-    role: "Warehouse Manager",
+    role: "Boardgame's Master",
     content: "The Wilmot's Warehouse platform has proven to be a very effective tool, enabling the team to grow and engage our community. It's the best organization game I've played.",
-    avatar: "/cards/faces/bluecircle.svg",
+    avatar: "/cards/logo.svg",
     color: "var(--btn-yellow)",
     rotation: -4,
     xOffset: 0,
     yOffset: 20,
   },
   {
-    name: "Blue Clarity",
+    name: "Nando",
     role: "Co-op Enthusiast",
     content: "Wilmot's Warehouse has helped to introduce a new and exciting way for the community to engage in tasks and participate in sorting experiences. It's a great addition to our game nights.",
-    avatar: "/cards/faces/apple.svg",
+    avatar: "/cards/logo.svg",
     color: "var(--btn-blue)",
     rotation: 2,
     xOffset: 0,
@@ -35,7 +35,7 @@ const TESTIMONIALS = [
     name: "Boyang",
     role: "Puzzle Gamer",
     content: "Wilmot's Warehouse connects gamers with high quality interaction, and also offers substantial growth to puzzle solving by leveling up the engagement from the community with wonderful sorting mechanics!",
-    avatar: "/cards/faces/cube.svg",
+    avatar: "/cards/logo.svg",
     color: "var(--btn-green)",
     rotation: -2,
     xOffset: 0,
@@ -43,29 +43,29 @@ const TESTIMONIALS = [
   },
   {
     name: "Immanuel",
-    role: "Efficiency Expert",
+    role: "Game Master",
     content: "The platform has proven to be a very effective tool, enabling players to learn pattern recognition and optimize their workflow under time pressure. Highly recommended!",
-    avatar: "/cards/faces/diamond.svg",
-    color: "var(--btn-green)", // Wait, the image uses different greens/yellows. Let's use neon green
+    avatar: "/cards/logo.svg",
+    color: "var(--btn-green)", 
     rotation: -3,
     xOffset: 20,
     yOffset: 30,
   },
   {
-    name: "Kamado",
-    role: "Head of Logistics",
+    name: "Yosua",
+    role: "Co-op Enthusiast",
     content: "I came to know Wilmot's Warehouse very occasionally, and it turns out to be such a big surprise for me, my sorting speed grows rapidly. Tis the best experience in puzzle games that I've ever had!",
-    avatar: "/cards/faces/frog.svg",
+    avatar: "/cards/logo.svg",
     color: "var(--btn-pink)",
     rotation: 4,
     xOffset: 0,
     yOffset: 40,
   },
   {
-    name: "Little",
+    name: "James",
     role: "Casual Gamer",
     content: "It's an efficient way for brain exercise, and I got more than a thousand points after I played the game! It's never late to start on Wilmot's Warehouse! Let us dream bigger and create better layouts.",
-    avatar: "/cards/faces/sun.svg",
+    avatar: "/cards/logo.svg",
     color: "var(--btn-orange)",
     rotation: -5,
     xOffset: -20,
@@ -100,7 +100,6 @@ export function Testimonials() {
       }
     );
 
-    // Continuous floating animation
     cardsRef.current.forEach((card, i) => {
       if (!card) return;
       gsap.to(card, {
@@ -144,13 +143,11 @@ export function Testimonials() {
                   }}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-white/20 bg-black flex items-center justify-center p-2">
-                      <img
-                        src={testimonial.avatar}
-                        alt={testimonial.name}
-                        className="h-full w-full object-contain"
-                      />
-                    </div>
+                    <img
+                      src={testimonial.avatar}
+                      alt={testimonial.name}
+                      className="h-10 w-10 shrink-0 rounded-sm object-contain"
+                    />
                     <div>
                       <h3 className="text-lg font-bold text-white leading-tight">
                         {testimonial.name}

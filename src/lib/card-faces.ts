@@ -23,7 +23,7 @@ export const CARD_FACES = [
   "horse.svg",
   "house.svg",
   "icecream.svg",
-  "posion.svg",
+  "poison.svg",
   "lava.svg",
   "lightbulb.svg",
   "linedown.svg",
