@@ -1,9 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
-import { Package, Archive } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 
 if (typeof window !== "undefined") {
@@ -12,11 +11,22 @@ if (typeof window !== "undefined") {
 
 const BOX_COUNT = 5;
 
+const ALL_FACES = [
+  "21 1.svg", "7star.svg", "8star.svg", "apple.svg", "banana-1.svg", "banana.svg", "bluecircle.svg", "bomb.svg", "buddha.svg", "confetti.svg", "constellation.svg", "cube.svg", "dandelion.svg", "diagonal.svg", "diamond.svg", "eye.svg", "fossil 1.svg", "four.svg", "frog.svg", "gem.svg", "hammer.svg", "horse.svg", "house.svg", "icecream.svg", "lava.svg", "lightbulb.svg", "linedown.svg", "mail.svg", "map.svg", "mask.svg", "matchstick.svg", "medical.svg", "milk.svg", "noodle.svg", "peanut.svg", "pentagon.svg", "piechart.svg", "pills.svg", "pins.svg", "plug.svg", "poison.svg", "popsicle.svg", "power.svg", "rainbow.svg", "reyna.svg", "rook.svg", "satellite.svg", "sewing.svg", "sharpener.svg", "sign.svg", "slither.svg", "sock.svg", "spade.svg", "spinner.svg", "steam.svg", "strips.svg", "sun.svg", "sunset.svg", "target.svg", "threaded.svg", "toggle.svg", "tree.svg", "triangle.svg", "viking.svg", "volcano.svg", "water.svg", "watermelon.svg", "wave.svg", "wavybands.svg", "wrench.svg"
+];
+
 export function ConveyorAnimation() {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<SVGPathElement>(null);
   const beltRef = useRef<SVGPathElement>(null);
-  const boxRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const boxRefs = useRef<(SVGGElement | null)[]>([]);
+
+  const [randomFaces, setRandomFaces] = useState<string[]>([]);
+  
+  useEffect(() => {
+    const shuffled = [...ALL_FACES].sort(() => 0.5 - Math.random());
+    setRandomFaces(shuffled.slice(0, BOX_COUNT));
+  }, []);
 
   // A winding path for the conveyor, aligned with the logo
   const pathData = "M -200,85 L 600,85 C 800,85 800,335 600,335 L 200,335 C 0,335 0,585 200,585 L 800,585 C 1000,585 1000,835 800,835 L -200,835";
@@ -55,8 +65,8 @@ export function ConveyorAnimation() {
   }, { scope: containerRef });
 
   const getBoxIcon = (index: number) => {
-    const isEven = index % 2 === 0;
-    return isEven ? <Package size={28} className="text-black/60" /> : <Archive size={28} className="text-black/60" />;
+    const face = randomFaces[index] || ALL_FACES[index % ALL_FACES.length];
+    return <img src={`/cards/faces/${face}`} alt="Game Card" className="w-12 h-12 object-contain rounded-sm" />;
   };
 
   return (
@@ -109,14 +119,14 @@ export function ConveyorAnimation() {
         
         {/* The boxes (inside SVG to guarantee perfect path alignment regardless of aspect ratio scaling) */}
         {Array.from({ length: BOX_COUNT }).map((_, i) => (
-          <g key={i} ref={(el: SVGGElement | null) => { boxRefs.current[i] = el as any; }}>
+          <g key={i} ref={(el: SVGGElement | null) => { boxRefs.current[i] = el; }}>
             <foreignObject
               width="100"
               height="100"
               x="-50"
               y="-50"
             >
-              <div className="w-[48px] h-[48px] bg-white border-2 border-black/20 rounded shadow-sm flex items-center justify-center transform rotate-12 ml-[26px] mt-[26px]">
+              <div className="w-[48px] h-[48px] flex items-center justify-center transform rotate-12 ml-[26px] mt-[26px]">
                 {getBoxIcon(i)}
               </div>
             </foreignObject>
