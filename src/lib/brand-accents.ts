@@ -15,7 +15,7 @@ export const BRAND_ACCENT_COLORS: readonly string[] = BRAND_ACCENTS.map(
 );
 
 export function pickBrandAccent(previous?: BrandAccent): BrandAccent {
-  const count = BRAND_ACCENTS.length;
+  const count = BRAND_ACCENTS.length as number;
   if (count === 1) return BRAND_ACCENTS[0];
   let next = BRAND_ACCENTS[Math.floor(Math.random() * count)];
   while (next === previous) {
