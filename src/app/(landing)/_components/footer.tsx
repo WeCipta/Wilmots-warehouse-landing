@@ -218,17 +218,17 @@ export default function Footer() {
               />
             }
           >
-            Order the Game{" "}
+            {siteContent.footer.cta}{" "}
             <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
           </Button>
 
           <div className="text-xs md:text-sm font-bold text-black/40 uppercase tracking-[0.2em] flex flex-col gap-2">
             <p>
-              Created by{" "}
+              {siteContent.credits.label}{" "}
               {siteContent.credits.creators.map((c) => c.name).join(", ")}
             </p>
             <p>
-              Published by{" "}
+              {siteContent.credits.publishedByLabel}{" "}
               <a
                 href={siteContent.credits.publisher.href}
                 className="hover:text-black transition-colors underline decoration-2 underline-offset-4"

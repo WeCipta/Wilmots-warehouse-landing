@@ -18,6 +18,10 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<LenisRef>(null);
 
   useEffect(() => {
+    history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+    lenisRef.current?.lenis?.scrollTo(0, { immediate: true });
+
     function update(time: number) {
       lenisRef.current?.lenis?.raf(time * 1000);
     }

@@ -20,6 +20,7 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { Button } from "@/components/ui/button";
 import { GameCard } from "@/components/game-card";
 import { CARD_BACK_SRC } from "@/lib/card-faces";
 import { useFollowMouse, type FollowFrame } from "@/components/follow-mouse";
@@ -40,8 +41,10 @@ import {
   type RulePlacement,
 } from "./tutorial-context";
 import { TutorialBubble } from "./tutorial-bubble";
+import { TutorialScoreboard } from "./tutorial-scoreboard";
 import {
   TUTORIAL_INSIDER_RULE_SRC,
+  TUTORIAL_INTRO,
   TUTORIAL_RULE_SRC,
 } from "./tutorial-data";
 
@@ -1420,6 +1423,12 @@ export function TutorialBoard() {
   } | null>(null);
   const selected = selection?.step === activeStep ? selection.data : null;
   const [flippedIds, setFlippedIds] = useState<Set<string>>(() => new Set());
+  const [scoreboardActive, setScoreboardActive] = useState(false);
+  const [scoreboardStep, setScoreboardStep] = useState(activeStep);
+  if (scoreboardStep !== activeStep) {
+    setScoreboardStep(activeStep);
+    setScoreboardActive(false);
+  }
   const { color: outlineColor, randomize: randomizeOutline } = useRandomAccent({
     persist: true,
   });
@@ -2298,6 +2307,23 @@ export function TutorialBoard() {
         </div>
 
         {!isMobile && <div className="shrink-0" style={{ width: leftW }} />}
+        {scoreStep ? (
+          <div
+            className="pointer-events-auto absolute inset-0 z-40 flex items-center justify-center px-3"
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
+          >
+            <Button
+              variant="filled"
+              size={isMobile ? "sm" : "default"}
+              className="max-w-full"
+              disabled={scoreboardActive}
+              onClick={() => setScoreboardActive(true)}
+            >
+              {TUTORIAL_INTRO.scoreboardLabel}
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-40 overflow-visible">
@@ -2326,6 +2352,7 @@ export function TutorialBoard() {
           {...bubbleLayerProps}
         />
       </div>
+      {scoreStep ? <TutorialScoreboard active={scoreboardActive} /> : null}
     </>
   );
 

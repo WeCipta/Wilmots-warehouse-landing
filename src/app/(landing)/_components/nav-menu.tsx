@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GridOverlay } from "@/components/grid-overlay";
+import { SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { useGridMetrics } from "@/hooks/use-grid-metrics";
 import { useRandomAccent } from "@/hooks/use-random-accent";
 import { siteContent } from "@/lib/site-content";
@@ -83,7 +84,7 @@ function NavLink({
   external?: boolean;
   open: boolean;
   index: number;
-  onNavigate: () => void;
+  onNavigate: (href?: string) => void;
 }) {
   const isExternal = isExternalHref(href, external);
   const { color, randomize, clear } = useRandomAccent();
@@ -91,7 +92,10 @@ function NavLink({
   return (
     <a
       href={href}
-      onClick={onNavigate}
+      onClick={(event) => {
+        if (href.startsWith("#")) event.preventDefault();
+        onNavigate(href);
+      }}
       onPointerEnter={randomize}
       onPointerLeave={clear}
       {...(isExternal
@@ -102,7 +106,9 @@ function NavLink({
         color,
         opacity: open ? 1 : 0,
         transform: open ? "translateY(0)" : "translateY(12px)",
-        transition: `opacity 250ms ${index * 50 + 100}ms ease-out, transform 250ms ${index * 50 + 100}ms ease-out, color 150ms ease`,
+        transition: open
+          ? `opacity 250ms ${index * 50 + 100}ms ease-out, transform 250ms ${index * 50 + 100}ms ease-out, color 150ms ease`
+          : "opacity 200ms ease-out, transform 200ms ease-out, color 150ms ease",
       }}
     >
       {label}
@@ -125,7 +131,7 @@ function ProductImage({
     <span className={cn("relative block overflow-hidden", className)}>
       <Image
         src={src}
-        alt="Wilmot's Warehouse — order on CMYK"
+        alt={siteContent.nav.product.alt}
         fill
         sizes={sizes}
         className="object-cover"
@@ -143,12 +149,14 @@ function Credits({ open }: { open: boolean }) {
       style={{
         opacity: open ? 1 : 0,
         transform: open ? "translateY(0)" : "translateY(12px)",
-        transition: `opacity 250ms ${NAV_LINKS.length * 50 + 150}ms ease-out, transform 250ms ${NAV_LINKS.length * 50 + 150}ms ease-out`,
+        transition: open
+          ? `opacity 250ms ${NAV_LINKS.length * 50 + 150}ms ease-out, transform 250ms ${NAV_LINKS.length * 50 + 150}ms ease-out`
+          : "opacity 200ms ease-out, transform 200ms ease-out",
       }}
     >
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Creators
+          {siteContent.nav.creditsCreatorsLabel}
         </p>
         <ul className="flex flex-col gap-1">
           {CREDITS.creators.map((creator) => (
@@ -160,7 +168,7 @@ function Credits({ open }: { open: boolean }) {
       </div>
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Publisher
+          {siteContent.nav.creditsPublisherLabel}
         </p>
         <CreditName
           name={CREDITS.publisher.name}
@@ -176,23 +184,16 @@ export function NavMenu({
   onNavigate,
 }: {
   open: boolean;
-  onNavigate: () => void;
+  onNavigate: (href?: string) => void;
 }) {
   const grid = useGridMetrics();
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Navigation menu"
-      aria-hidden={!open}
-      className={cn(
-        "fixed inset-0 z-40 flex flex-col transition-all duration-300 ease-in-out",
-        open
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none",
-      )}
-    >
+    <SheetContent side="top" className="bg-background">
+      <SheetTitle className="sr-only">{siteContent.nav.menuTitle}</SheetTitle>
+      <SheetDescription className="sr-only">
+        {siteContent.nav.menuDescription}
+      </SheetDescription>
       <div className="absolute inset-0 bg-background">
         <GridOverlay
           aria-hidden="true"
@@ -202,14 +203,17 @@ export function NavMenu({
         />
       </div>
 
-      <div className="relative z-10 h-full overflow-hidden pt-(--grid-cell) lg:overflow-y-auto lg:p-(--grid-cell)">
+      <div
+        data-lenis-prevent
+        className="relative z-10 h-full overflow-hidden pt-(--grid-cell) lg:overflow-y-auto lg:p-(--grid-cell)"
+      >
         <div className="flex h-full flex-col gap-10 overflow-hidden border border-white/20 bg-background px-5 pt-6 lg:grid lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.45fr)] lg:gap-(--grid-cell) lg:overflow-visible lg:p-8">
           <a
             href={siteContent.orderUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Order Wilmot's Warehouse on CMYK"
-            onClick={onNavigate}
+            aria-label={siteContent.nav.product.ariaLabel}
+            onClick={() => onNavigate()}
             className="group relative order-last block w-full shrink-0 lg:order-0 lg:h-full lg:min-h-0 lg:shrink"
           >
             <ProductImage
@@ -228,7 +232,7 @@ export function NavMenu({
 
           <div className="flex shrink-0 flex-col justify-center gap-12 lg:min-h-0 lg:shrink">
             <nav
-              aria-label="Primary navigation"
+              aria-label={siteContent.nav.primaryAriaLabel}
               className="flex flex-col gap-1 sm:gap-2"
             >
               {NAV_LINKS.map((link, i) => (
@@ -246,6 +250,6 @@ export function NavMenu({
           </div>
         </div>
       </div>
-    </div>
+    </SheetContent>
   );
 }

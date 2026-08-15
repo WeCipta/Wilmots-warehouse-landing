@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import {
   FollowMouseProvider,
@@ -33,9 +34,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col">
+        <Script id="scroll-restoration" strategy="beforeInteractive">
+          {`history.scrollRestoration="manual"`}
+        </Script>
         <FollowMouseProvider>
-          <Navbar />
-          <SmoothScroll>{children}</SmoothScroll>
+          <SmoothScroll>
+            <Navbar />
+            {children}
+          </SmoothScroll>
           <FollowMouseCursor />
         </FollowMouseProvider>
       </body>

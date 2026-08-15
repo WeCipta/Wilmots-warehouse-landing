@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 import { GameCard } from "@/components/game-card";
+import { useLenisLock } from "@/hooks/use-lenis-lock";
 import { CARD_FACES, resolveCardFaceSrc } from "@/lib/card-faces";
 
 gsap.registerPlugin(Flip);
@@ -43,6 +44,11 @@ export function LoadingScreen() {
   const [visible, setVisible] = useState(true);
   const [cardSrc, setCardSrc] = useState<string>(CARD_FACES[0]);
   const [fading, setFading] = useState(false);
+  const lenis = useLenisLock(visible);
+
+  useEffect(() => {
+    lenis?.scrollTo(0, { immediate: true });
+  }, [lenis]);
 
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;

@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GameCard } from "@/components/game-card";
 import { useTutorialBoard } from "./tutorial-context";
+import { siteContent } from "@/lib/site-content";
 import {
   TUTORIAL_INTRO,
   TUTORIAL_PRODUCT_FACES,
@@ -21,7 +22,7 @@ function TutorialKit() {
   return (
     <div
       className="grid grid-cols-4 gap-2 sm:gap-3"
-      aria-label="Tutorial cards: 4 products, 4 customers, and 1 rule"
+      aria-label={siteContent.tutorial.kitAriaLabel}
     >
       {TUTORIAL_PRODUCT_FACES.map((src) => (
         <div key={src} className="aspect-square w-full">
@@ -30,11 +31,11 @@ function TutorialKit() {
       ))}
       {customers.map((customer) => (
         <div key={customer.customerSrc} className="aspect-square w-full">
-          <GameCard src={customer.customerSrc} alt="Customer" size="100%" />
+          <GameCard src={customer.customerSrc} alt={siteContent.tutorial.customerAlt} size="100%" />
         </div>
       ))}
       <div className="aspect-square w-full">
-        <GameCard src={TUTORIAL_RULE_SRC} alt="Rule card" size="100%" />
+        <GameCard src={TUTORIAL_RULE_SRC} alt={siteContent.tutorial.ruleAlt} size="100%" />
       </div>
     </div>
   );
@@ -48,7 +49,7 @@ export function TutorialIntro() {
       <div className="flex flex-col gap-8 px-8 pt-16 pb-10 sm:px-12 sm:pt-20 sm:pb-12 md:px-16 xl:grid xl:min-h-svh xl:grid-cols-2 xl:gap-0 xl:px-0 xl:py-0">
         <div className="flex flex-col items-start gap-6 xl:justify-center xl:px-16 xl:py-24">
           <h2 className="text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-5xl lg:text-7xl">
-            How to Play
+            {siteContent.tutorial.title}
           </h2>
           <p className="max-w-md text-sm leading-relaxed text-white/50 sm:text-base">
             {TUTORIAL_INTRO.blurb}

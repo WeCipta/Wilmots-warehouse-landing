@@ -4,74 +4,13 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { cn } from "@/lib/utils";
+import { siteContent } from "@/lib/site-content";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const TESTIMONIALS = [
-  {
-    name: "Jonathan",
-    role: "Boardgame's Master",
-    content: "The Wilmot's Warehouse platform has proven to be a very effective tool, enabling the team to grow and engage our community. It's the best organization game I've played.",
-    avatar: "/cards/logo.svg",
-    color: "var(--btn-yellow)",
-    rotation: -4,
-    xOffset: 0,
-    yOffset: 20,
-  },
-  {
-    name: "Nando",
-    role: "Co-op Enthusiast",
-    content: "Wilmot's Warehouse has helped to introduce a new and exciting way for the community to engage in tasks and participate in sorting experiences. It's a great addition to our game nights.",
-    avatar: "/cards/logo.svg",
-    color: "var(--btn-blue)",
-    rotation: 2,
-    xOffset: 0,
-    yOffset: -10,
-  },
-  {
-    name: "Boyang",
-    role: "Puzzle Gamer",
-    content: "Wilmot's Warehouse connects gamers with high quality interaction, and also offers substantial growth to puzzle solving by leveling up the engagement from the community with wonderful sorting mechanics!",
-    avatar: "/cards/logo.svg",
-    color: "var(--btn-green)",
-    rotation: -2,
-    xOffset: 0,
-    yOffset: 10,
-  },
-  {
-    name: "Immanuel",
-    role: "Game Master",
-    content: "The platform has proven to be a very effective tool, enabling players to learn pattern recognition and optimize their workflow under time pressure. Highly recommended!",
-    avatar: "/cards/logo.svg",
-    color: "var(--btn-green)", 
-    rotation: -3,
-    xOffset: 20,
-    yOffset: 30,
-  },
-  {
-    name: "Yosua",
-    role: "Co-op Enthusiast",
-    content: "I came to know Wilmot's Warehouse very occasionally, and it turns out to be such a big surprise for me, my sorting speed grows rapidly. Tis the best experience in puzzle games that I've ever had!",
-    avatar: "/cards/logo.svg",
-    color: "var(--btn-pink)",
-    rotation: 4,
-    xOffset: 0,
-    yOffset: 40,
-  },
-  {
-    name: "James",
-    role: "Casual Gamer",
-    content: "It's an efficient way for brain exercise, and I got more than a thousand points after I played the game! It's never late to start on Wilmot's Warehouse! Let us dream bigger and create better layouts.",
-    avatar: "/cards/logo.svg",
-    color: "var(--btn-orange)",
-    rotation: -5,
-    xOffset: -20,
-    yOffset: 20,
-  },
-];
+const TESTIMONIALS = siteContent.testimonials.items;
 
 export function Testimonials() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -118,7 +57,12 @@ export function Testimonials() {
     <section className="relative w-full bg-background py-24 lg:py-32 mb-16 md:mb-24" ref={containerRef}>
       <div className="mx-auto w-full px-8 sm:px-12 md:px-16">
         <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-16 max-w-2xl">
-          Feedback from<br />Customers
+          {siteContent.testimonials.title.split("\n").map((line, i) => (
+            <span key={line}>
+              {i > 0 ? <br /> : null}
+              {line}
+            </span>
+          ))}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 px-2 sm:px-4 lg:px-8">

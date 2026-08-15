@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wilmot's Warehouse
 
-## Getting Started
+A landing page for [Wilmot's Warehouse](https://www.cmyk.games/products/wilmot), the cooperative board game from [CMYK](https://www.cmyk.games).
 
-First, run the development server:
+Your team organizes a warehouse together. You invent silly stories so everyone can remember where the face-down product tiles sit. Then a five-minute timer starts, and the table races to match every customer card to the right tile.
+
+Created by Ricky Haggett, Richard Hogg, and David King II.
+
+## What's on the site
+
+- A hero built from a live grid of product tiles
+- A short pitch for how the game plays
+- What's in the box: board, tiles, customer cards, idea cards, and the rulebook
+- An interactive how-to-play tutorial you can walk through on the page
+- Photos of the game on the table
+- Notes from players
+- A link to order the game on CMYK
+
+Most of the copy, credits, gallery photos, and player quotes live in `src/lib/site-content.ts`.
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build   # production build
+npm run start   # serve the production build
+npm run lint    # lint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Stack
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js, React, Tailwind CSS, GSAP, Lenis, and Matter.js.
