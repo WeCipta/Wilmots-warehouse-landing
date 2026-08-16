@@ -188,8 +188,8 @@ export function FooterSection() {
   }, [cards, inView]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 h-screen w-full bg-background overflow-hidden relative">
-      <div className="bg-[#FFFDEB] text-black w-full h-full px-8 pb-8 pt-28 md:px-6 md:pb-8 md:pt-40 flex flex-col justify-between relative z-10 pointer-events-auto border-r border-black/10 overflow-hidden">
+    <div className="grid grid-cols-1 xl:grid-cols-2 xl:h-screen w-full bg-background overflow-hidden relative">
+      <div className="bg-[#FFFDEB] text-black w-full h-[100svh] xl:h-full px-8 pb-8 pt-28 md:px-6 md:pb-8 md:pt-40 flex flex-col justify-between relative z-10 pointer-events-auto border-b xl:border-b-0 xl:border-r border-black/10 overflow-hidden">
         <ConveyorAnimation />
         <div className="relative z-10">
           <BrandTitle className="uppercase tracking-tighter mb-10 leading-[0.9]" />
@@ -240,7 +240,7 @@ export function FooterSection() {
         </div>
       </div>
       <div
-        className="relative h-full bg-background overflow-hidden hidden md:flex flex-col"
+        className="relative h-[100svh] xl:h-full bg-background overflow-hidden hidden xl:flex flex-col"
         ref={sceneRef}
       >
         {cards.map((card) => (
