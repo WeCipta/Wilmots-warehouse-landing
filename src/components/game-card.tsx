@@ -7,7 +7,10 @@ import { cn } from "@/lib/utils";
 import { useFollowMouse } from "@/components/follow-mouse";
 import { GRID_CELL } from "@/lib/grid";
 import {
+  CARD_BACK_ALT,
   CARD_BACK_SRC,
+  cardBackAlt,
+  mediaAlt,
   pickRandomCardFace,
   resolveCardFaceSrc,
 } from "@/lib/card-faces";
@@ -80,7 +83,7 @@ const cardShellClass =
 
 export function GameCard({
   src,
-  alt = "card",
+  alt,
   variant = "face-up",
   size = GRID_CELL,
   className,
@@ -110,6 +113,8 @@ export function GameCard({
   const faceSrc = src ?? randomFace;
   const resolvedFace = faceSrc ? resolveCardFaceSrc(faceSrc) : null;
   const resolvedBack = backSrc ? resolveCardFaceSrc(backSrc) : CARD_BACK_SRC;
+  const faceAlt = alt ?? (faceSrc ? mediaAlt(faceSrc) : CARD_BACK_ALT);
+  const backAlt = cardBackAlt(backSrc);
   const useFlip = !lens && !!resolvedFace && typeof flipped === "boolean";
 
   const showLensFace = lens && !!resolvedFace;
@@ -221,7 +226,7 @@ export function GameCard({
         <span className="absolute inset-0 overflow-hidden rounded-[6px] [backface-visibility:hidden]">
           <Image
             src={resolvedBack}
-            alt=""
+            alt={backAlt}
             width={imageSize}
             height={imageSize}
             className="block h-full w-full object-cover"
@@ -232,7 +237,7 @@ export function GameCard({
         <span className="absolute inset-0 overflow-hidden rounded-[6px] [backface-visibility:hidden] [transform:rotateY(180deg)]">
           <Image
             src={resolvedFace!}
-            alt={alt}
+            alt={faceAlt}
             width={imageSize}
             height={imageSize}
             className="block h-full w-full object-cover"
@@ -257,7 +262,7 @@ export function GameCard({
     >
       <Image
         src={imageSrc}
-        alt={showLensFace ? "" : alt}
+        alt={showLensFace ? CARD_BACK_ALT : imageSrc === CARD_BACK_SRC ? backAlt : faceAlt}
         width={imageSize}
         height={imageSize}
         className="block h-full w-full object-cover"
@@ -265,7 +270,7 @@ export function GameCard({
         priority={false}
       />
       {showLensFace && (
-        <LensFace src={faceSrc!} alt={alt} imageSize={imageSize} />
+        <LensFace src={faceSrc!} alt={faceAlt} imageSize={imageSize} />
       )}
     </span>
   );

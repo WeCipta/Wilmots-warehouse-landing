@@ -6,7 +6,8 @@ import {
   FollowMouseProvider,
   FollowMouseCursor,
 } from "@/components/follow-mouse";
-import Navbar from "@/app/(landing)/_components/navbar";
+import { LoadingScreen } from "@/components/loading-screen";
+import { Navbar } from "@/components/navbar";
 import { nunito } from "@/lib/fonts";
 import { siteContent } from "@/lib/site-content";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Script>
         <FollowMouseProvider>
           <SmoothScroll>
+            <LoadingScreen />
             <Navbar />
             {children}
           </SmoothScroll>
